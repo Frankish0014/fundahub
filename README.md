@@ -1,17 +1,20 @@
-# fundahub
+# FundaHub
 
-A new Flutter project.
+Mobile-first Flutter app for young entrepreneurs in Rwanda/Africa to discover funding, government programmes, education resources, and community support.
 
-## Getting Started
+## Team
 
-This project is a starting point for a Flutter application.
+See **[CONTRIBUTING.md](CONTRIBUTING.md)** for ownership, branching, and “done when” checklists.
 
-A few resources to get you started if this is your first Flutter project:
+Issue drafts to paste on GitHub: [`docs/team-issues/`](docs/team-issues/).
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## Getting started
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+flutter pub get
+flutter run -d chrome
+```
+
+For a phone-sized preview in the browser: open DevTools (`F12`) → device toolbar (`Ctrl+Shift+M`).
+
+Firebase setup will be documented once Auth/Firestore work lands (Tifare / Timothy / Armel + Titus README pass).
