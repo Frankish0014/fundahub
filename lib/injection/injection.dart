@@ -9,7 +9,9 @@ import '../features/notifications/data/datasources/notification_remote_datasourc
 import '../features/notifications/data/repositories/notification_repository_impl.dart';
 import '../features/notifications/domain/repositories/notification_repository.dart';
 import '../features/notifications/domain/usecases/get_notifications.dart';
-import '../features/opportunities/data/datasources/opportunity_remote_datasource.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import '../features/opportunities/data/datasources/opportunity_firestore_datasource.dart';
 import '../features/opportunities/data/repositories/opportunity_repository_impl.dart';
 import '../features/opportunities/domain/repositories/opportunity_repository.dart';
 import '../features/opportunities/domain/usecases/opportunity_usecases.dart';
@@ -60,7 +62,8 @@ Future<void> initDependencies() async {
     HasCompletedOnboarding(authRepository),
   );
 
-  final opportunityDataSource = OpportunityMockDataSource();
+  final FirebaseFirestore firestore = FakeFirebaseFirestore();
+  final opportunityDataSource = OpportunityFirestoreDataSource(firestore);
   final opportunityRepository = OpportunityRepositoryImpl(
     opportunityDataSource,
   );
