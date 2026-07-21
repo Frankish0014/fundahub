@@ -24,6 +24,7 @@ import '../../features/settings/presentation/pages/notification_settings_page.da
 import '../../features/settings/presentation/pages/settings_page.dart';
 import '../../features/shell/presentation/pages/main_shell_page.dart';
 import '../../injection/injection.dart';
+import '../../features/opportunities/presentation/pages/opportunity_detail_page.dart';
 
 GoRouter createAppRouter() {
   return GoRouter(
@@ -82,6 +83,12 @@ GoRouter createAppRouter() {
       GoRoute(
         path: '/resources/detail',
         builder: (context, state) => const ResourceDetailPage(),
+      ),
+      GoRoute(
+        path: '/opportunities/:id',
+        builder: (context, state) => OpportunityDetailPage(
+          opportunityId: state.pathParameters['id']!,
+        ),
       ),
       GoRoute(
         path: '/community',

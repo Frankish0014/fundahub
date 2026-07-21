@@ -9,7 +9,7 @@ import '../features/notifications/data/datasources/notification_remote_datasourc
 import '../features/notifications/data/repositories/notification_repository_impl.dart';
 import '../features/notifications/domain/repositories/notification_repository.dart';
 import '../features/notifications/domain/usecases/get_notifications.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' hide Type;
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import '../features/opportunities/data/datasources/opportunity_firestore_datasource.dart';
 import '../features/opportunities/data/repositories/opportunity_repository_impl.dart';
@@ -79,6 +79,18 @@ Future<void> initDependencies() async {
   );
   sl.registerSingleton<ToggleSavedOpportunity>(
     ToggleSavedOpportunity(opportunityRepository),
+  );
+  sl.registerSingleton<GetOpportunityById>(
+    GetOpportunityById(opportunityRepository),
+  );
+  sl.registerSingleton<CreateOpportunity>(
+    CreateOpportunity(opportunityRepository),
+  );
+  sl.registerSingleton<UpdateOpportunity>(
+    UpdateOpportunity(opportunityRepository),
+  );
+  sl.registerSingleton<DeleteOpportunity>(
+    DeleteOpportunity(opportunityRepository),
   );
 
   final notificationDataSource = NotificationMockDataSource();
