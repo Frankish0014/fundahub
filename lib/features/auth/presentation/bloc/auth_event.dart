@@ -59,6 +59,18 @@ class AuthLoginSubmitted extends AuthEvent {
   const AuthLoginSubmitted();
 }
 
+class AuthGoogleSubmitted extends AuthEvent {
+  const AuthGoogleSubmitted();
+}
+
+class AuthPasswordResetRequested extends AuthEvent {
+  const AuthPasswordResetRequested(this.email);
+  final String email;
+
+  @override
+  List<Object?> get props => [email];
+}
+
 class AuthInterestsSubmitted extends AuthEvent {
   const AuthInterestsSubmitted();
 }
