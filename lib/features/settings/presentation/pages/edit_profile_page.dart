@@ -92,9 +92,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
 
     if (_role.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select your role.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please select your role.')));
       return;
     }
 
@@ -103,10 +103,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     });
 
     try {
-      await _authRepository.updateProfile(
-        fullName: fullName,
-        role: _role,
-      );
+      await _authRepository.updateProfile(fullName: fullName, role: _role);
 
       await _authRepository.updateInterests(_selected.toList());
 
@@ -145,18 +142,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
         title: Text(
           'Edit Profile',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w700,
-              ),
+            color: AppColors.primary,
+            fontWeight: FontWeight.w700,
+          ),
         ),
         centerTitle: true,
         actions: [
           IconButton(
             onPressed: () => context.push('/settings'),
-            icon: const Icon(
-              Icons.settings_outlined,
-              color: AppColors.primary,
-            ),
+            icon: const Icon(Icons.settings_outlined, color: AppColors.primary),
           ),
         ],
       ),
@@ -166,9 +160,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   Widget _buildBody(BuildContext context) {
     if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (_errorMessage != null) {
@@ -178,10 +170,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                _errorMessage!,
-                textAlign: TextAlign.center,
-              ),
+              Text(_errorMessage!, textAlign: TextAlign.center),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
@@ -213,7 +202,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     backgroundColor: AppColors.avatarBg,
                     child: Text(
                       _getInitial(),
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
                             color: AppColors.primary,
                             fontWeight: FontWeight.w700,
                           ),
@@ -242,9 +232,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
               Text(
                 'Change Photo',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),
@@ -252,9 +242,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
         const SizedBox(height: 24),
         Text(
           'Full Name',
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: AppColors.textSecondary,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.labelLarge?.copyWith(color: AppColors.textSecondary),
         ),
         const SizedBox(height: 6),
         FhTextField(
@@ -265,19 +255,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
         const SizedBox(height: 16),
         Text(
           'Role',
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: AppColors.textSecondary,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.labelLarge?.copyWith(color: AppColors.textSecondary),
         ),
         const SizedBox(height: 6),
         DropdownButtonFormField<String>(
-          value: _dropdownValue(),
+          initialValue: _dropdownValue(),
           items: _availableRoles()
               .map(
-                (role) => DropdownMenuItem<String>(
-                  value: role,
-                  child: Text(role),
-                ),
+                (role) =>
+                    DropdownMenuItem<String>(value: role, child: Text(role)),
               )
               .toList(),
           onChanged: (value) {
@@ -292,17 +280,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
         const SizedBox(height: 16),
         Text(
           'Bio',
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: AppColors.textSecondary,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.labelLarge?.copyWith(color: AppColors.textSecondary),
         ),
         const SizedBox(height: 6),
         TextField(
           controller: _bioController,
           maxLines: 4,
-          decoration: const InputDecoration(
-            hintText: 'Tell your story...',
-          ),
+          decoration: const InputDecoration(hintText: 'Tell your story...'),
         ),
         const SizedBox(height: 20),
         Container(
@@ -320,8 +306,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   Text(
                     'My Interests',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   const Spacer(),
                   TextButton(
@@ -329,9 +315,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     child: Text(
                       '+ Add Interest',
                       style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                            color: AppColors.accent,
-                            fontWeight: FontWeight.w700,
-                          ),
+                        color: AppColors.accent,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ],
@@ -351,9 +337,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         });
                       },
                       selectedColor: AppColors.primary,
-                      labelStyle: const TextStyle(
-                        color: AppColors.onPrimary,
-                      ),
+                      labelStyle: const TextStyle(color: AppColors.onPrimary),
                       deleteIconColor: AppColors.onPrimary,
                       showCheckmark: false,
                     ),
@@ -382,13 +366,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
         ),
         const SizedBox(height: 24),
         FhPrimaryButton(
-  label: _isSaving ? 'Saving...' : 'Save Changes',
-  onPressed: () async {
-    if (!_isSaving) {
-      await _save();
-    }
-  },
-),
+          label: _isSaving ? 'Saving...' : 'Save Changes',
+          onPressed: () async {
+            if (!_isSaving) {
+              await _save();
+            }
+          },
+        ),
       ],
     );
   }
