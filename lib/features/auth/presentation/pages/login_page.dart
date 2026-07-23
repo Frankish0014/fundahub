@@ -161,51 +161,49 @@ class _LoginView extends StatelessWidget {
   }
 
   Future<void> _showForgotPasswordDialog(
-  BuildContext context,
-  String currentEmail,
-) async {
-  var enteredEmail = currentEmail;
+    BuildContext context,
+    String currentEmail,
+  ) async {
+    var enteredEmail = currentEmail;
 
-  final shouldSend = await showDialog<bool>(
-    context: context,
-    builder: (dialogContext) {
-      return AlertDialog(
-        title: const Text('Reset password'),
-        content: TextFormField(
-          initialValue: currentEmail,
-          keyboardType: TextInputType.emailAddress,
-          autofocus: true,
-          onChanged: (value) {
-            enteredEmail = value;
-          },
-          decoration: const InputDecoration(
-            labelText: 'Email address',
-            hintText: 'name@example.com',
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop(false);
+    final shouldSend = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Reset password'),
+          content: TextFormField(
+            initialValue: currentEmail,
+            keyboardType: TextInputType.emailAddress,
+            autofocus: true,
+            onChanged: (value) {
+              enteredEmail = value;
             },
-            child: const Text('Cancel'),
+            decoration: const InputDecoration(
+              labelText: 'Email address',
+              hintText: 'name@example.com',
+            ),
           ),
-          FilledButton(
-            onPressed: () {
-              FocusScope.of(dialogContext).unfocus();
-              Navigator.of(dialogContext).pop(true);
-            },
-            child: const Text('Send reset email'),
-          ),
-        ],
-      );
-    },
-  );
-
-  if (shouldSend == true && context.mounted) {
-    context.read<AuthBloc>().add(
-      AuthPasswordResetRequested(enteredEmail),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop(false);
+              },
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () {
+                FocusScope.of(dialogContext).unfocus();
+                Navigator.of(dialogContext).pop(true);
+              },
+              child: const Text('Send reset email'),
+            ),
+          ],
+        );
+      },
     );
+
+    if (shouldSend == true && context.mounted) {
+      context.read<AuthBloc>().add(AuthPasswordResetRequested(enteredEmail));
+    }
   }
-}
 }
