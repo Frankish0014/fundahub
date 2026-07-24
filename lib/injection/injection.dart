@@ -13,7 +13,6 @@ import '../features/notifications/data/repositories/notification_repository_impl
 import '../features/notifications/domain/repositories/notification_repository.dart';
 import '../features/notifications/domain/usecases/get_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' hide Type;
-import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import '../features/opportunities/data/datasources/opportunity_firestore_datasource.dart';
 import '../features/opportunities/data/repositories/opportunity_repository_impl.dart';
 import '../features/opportunities/domain/repositories/opportunity_repository.dart';
@@ -50,7 +49,10 @@ class ServiceLocator {
   }
 }
 
-Future<void> initDependencies({AuthRepository? authRepositoryOverride}) async {
+Future<void> initDependencies({
+  AuthRepository? authRepositoryOverride,
+  FirebaseFirestore? firestoreOverride,
+}) async {
   final prefs = await SharedPreferences.getInstance();
 
   late final AuthRepository authRepository;
@@ -87,7 +89,7 @@ Future<void> initDependencies({AuthRepository? authRepositoryOverride}) async {
     HasCompletedOnboarding(authRepository),
   );
 
-  final FirebaseFirestore firestore = FakeFirebaseFirestore();
+  final FirebaseFirestore firestore = firestoreOverride ?? FirebaseFirestore.instance;
   final opportunityDataSource = OpportunityFirestoreDataSource(firestore);
   final opportunityRepository = OpportunityRepositoryImpl(
     opportunityDataSource,
