@@ -50,7 +50,11 @@ GoRouter createAppRouter() {
           loc == '/offline' ||
           loc == '/error';
 
-      if (!hasOnboarded && !isWelcome && !isOnboarding && !isAuthFlow) {
+      if (!hasOnboarded &&
+          user == null &&
+          !isWelcome &&
+          !isOnboarding &&
+          !isAuthFlow) {
         return '/';
       }
       if (hasOnboarded && user == null && isAppFlow) {
