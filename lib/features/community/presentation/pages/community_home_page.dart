@@ -23,23 +23,31 @@ class CommunityHomePage extends StatelessWidget {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 8, 8),
+              padding: const EdgeInsets.fromLTRB(4, 8, 8, 8),
               child: Row(
                 children: [
-                  const CircleAvatar(
-                    radius: 18,
-                    backgroundColor: AppColors.avatarBg,
-                    child: Text('A'),
+                  IconButton(
+                    tooltip: 'Back',
+                    onPressed: () {
+                      if (context.canPop()) {
+                        context.pop();
+                      } else {
+                        context.go('/home/profile');
+                      }
+                    },
+                    icon: const Icon(Icons.arrow_back),
                   ),
-                  const SizedBox(width: 10),
                   Text(
                     'Community',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                          fontWeight: FontWeight.w700,
+                        ),
                   ),
                   const Spacer(),
-                  IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.search),
+                  ),
                   IconButton(
                     onPressed: () => context.push('/settings'),
                     icon: const Icon(Icons.settings_outlined),
