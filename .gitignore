@@ -43,3 +43,15 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Firebase config — contains project API keys. Generate locally with
+# `flutterfire configure --project=fundahub-f13b4` (see PR description / setup notes).
+/lib/firebase_options.dart
+/android/app/google-services.json
+/ios/Runner/GoogleService-Info.plist
+/macos/Runner/GoogleService-Info.plist
+/.firebaserc
+/firebase.json
+
+# Local run config
+/.claude/
