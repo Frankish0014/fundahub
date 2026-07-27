@@ -18,3 +18,8 @@ flutter run -d chrome
 For a phone-sized preview in the browser: open DevTools (`F12`) → device toolbar (`Ctrl+Shift+M`).
 
 Firebase setup will be documented once Auth/Firestore work lands (Tifare / Timothy / Armel + Titus README pass).
+
+
+## Firebase authentication setup
+
+Tifare's email/password, Google Sign-In, password reset, session restoration, and auth-test setup is documented in [`AUTH_SETUP.md`](AUTH_SETUP.md). Configure Firebase before running the mobile app.

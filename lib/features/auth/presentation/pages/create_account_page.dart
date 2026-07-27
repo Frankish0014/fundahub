@@ -27,15 +27,25 @@ class _CreateAccountView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
-      listenWhen: (p, n) => p.status != n.status,
+      listenWhen: (previous, next) =>
+          previous.status != next.status ||
+          previous.errorMessage != next.errorMessage ||
+          previous.infoMessage != next.infoMessage,
       listener: (context, state) {
         if (state.status == AuthStatus.registered) {
+          final message = state.infoMessage;
+          if (message != null) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(message)));
+          }
           context.go('/tailor');
+          return;
         }
         if (state.errorMessage != null) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(SnackBar(content: Text(state.errorMessage!)));
         }
       },
       builder: (context, state) {
