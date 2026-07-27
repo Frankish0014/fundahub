@@ -1,10 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../injection/injection.dart';
+import '../bloc/community_bloc.dart';
 
 class CommunityHomePage extends StatelessWidget {
   const CommunityHomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) =>
+          CommunityBloc(getCommunityPosts: sl())..add(const CommunityStarted()),
+      child: const _CommunityView(),
+    );
+  }
+}
+
+class _CommunityView extends StatelessWidget {
+  const _CommunityView();
 
   static const _sectors = ['#AgriTech', '#FinTech', '#EdTech', '#CleanEnergy'];
 
@@ -95,47 +111,84 @@ class CommunityHomePage extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 88),
-                children: [
-                  _PostCard(
-                    name: 'Amara Okafor',
-                    meta: '2h ago • Founder, GreenRoots',
-                    body:
-                        'Just closed our first round of seed funding! Grateful for the mentors who pushed us to tighten the unit economics. 🌱',
-                    tags: const ['#AgriTech', '#FundingSuccess'],
-                    likes: 124,
-                    comments: 18,
-                    onTap: () => context.push('/community/post'),
-                  ),
-                  const SizedBox(height: 12),
-                  _PostCard(
-                    name: 'Kofi Mensah',
-                    meta: '5h ago • Logistics Strategist',
-                    body:
-                        'Anyone solving last-mile delivery challenges in Accra? Looking for IoT partners.',
-                    tags: const ['#Logistics', '#IoT'],
-                    likes: 89,
-                    comments: 42,
-                    showImage: true,
-                    showBookmark: true,
-                    onTap: () => context.push('/community/post'),
-                  ),
-                  const SizedBox(height: 12),
-                  _PostCard(
-                    name: 'Dr. Samuel Adeyemi',
-                    meta: '8h ago • Angel Investor',
-                    body:
-                        'Your business model is only as strong as the problem you refuse to ignore.',
-                    tags: const ['#Entrepreneurship', '#Advice'],
-                    likes: 210,
-                    comments: 56,
-                    isQuote: true,
-                    onTap: () => context.push('/community/post'),
-                  ),
-                ],
+              child: BlocBuilder<CommunityBloc, CommunityState>(
+                builder: (context, state) {
+                  if (state.status == CommunityStatus.loading ||
+                      state.status == CommunityStatus.initial) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (state.status == CommunityStatus.failure) {
+                    return _CommunityError(
+                      message: state.errorMessage,
+                      onRetry: () => context.read<CommunityBloc>().add(
+                        const CommunityStarted(),
+                      ),
+                    );
+                  }
+
+                  final posts = state.posts;
+                  if (posts.isEmpty) {
+                    return const Center(child: Text('No posts yet.'));
+                  }
+
+                  return ListView.separated(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 88),
+                    itemCount: posts.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final post = posts[index];
+                      return _PostCard(
+                        name: post.authorName,
+                        meta: post.authorMeta,
+                        body: post.body,
+                        tags: post.tags,
+                        likes: post.likes,
+                        comments: post.commentCount,
+                        showImage: post.hasImage,
+                        isQuote: post.isQuote,
+                        onTap: () =>
+                            context.push('/community/post', extra: post.id),
+                      );
+                    },
+                  );
+                },
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CommunityError extends StatelessWidget {
+  const _CommunityError({this.message, required this.onRetry});
+
+  final String? message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.cloud_off_outlined,
+              size: 40,
+              color: AppColors.textMuted,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Could not load the community feed.',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 12),
+            TextButton(onPressed: onRetry, child: const Text('Retry')),
           ],
         ),
       ),
@@ -153,7 +206,6 @@ class _PostCard extends StatelessWidget {
     required this.comments,
     required this.onTap,
     this.showImage = false,
-    this.showBookmark = false,
     this.isQuote = false,
   });
 
@@ -165,7 +217,6 @@ class _PostCard extends StatelessWidget {
   final int comments;
   final VoidCallback onTap;
   final bool showImage;
-  final bool showBookmark;
   final bool isQuote;
 
   @override
@@ -195,7 +246,7 @@ class _PostCard extends StatelessWidget {
                 CircleAvatar(
                   radius: 18,
                   backgroundColor: AppColors.avatarBg,
-                  child: Text(name[0]),
+                  child: Text(name.isEmpty ? '?' : name[0]),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -296,10 +347,6 @@ class _PostCard extends StatelessWidget {
                 const Icon(Icons.chat_bubble_outline, size: 18),
                 const SizedBox(width: 4),
                 Text('$comments'),
-                if (showBookmark) ...[
-                  const SizedBox(width: 16),
-                  const Icon(Icons.bookmark_border, size: 18),
-                ],
                 const Spacer(),
                 const Icon(Icons.share_outlined, size: 18),
               ],
