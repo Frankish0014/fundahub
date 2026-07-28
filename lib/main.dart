@@ -4,8 +4,8 @@ import 'package:flutter/services.dart';
 
 import 'app.dart';
 import 'core/theme/app_colors.dart';
-import 'injection/injection.dart';
 import 'firebase_options.dart';
+import 'injection/injection.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

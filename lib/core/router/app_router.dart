@@ -8,6 +8,7 @@ import '../../features/community/presentation/pages/community_home_page.dart';
 import '../../features/community/presentation/pages/post_detail_page.dart';
 import '../../core/widgets/connection_lost_page.dart';
 import '../../core/widgets/generic_error_page.dart';
+import '../../features/government/domain/entities/gov_programme.dart';
 import '../../features/government/presentation/pages/gov_detail_page.dart';
 import '../../features/government/presentation/pages/gov_programmes_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
@@ -15,6 +16,7 @@ import '../../features/notifications/presentation/pages/notifications_page.dart'
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../features/onboarding/presentation/pages/welcome_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
+import '../../features/resources/domain/entities/training_resource.dart';
 import '../../features/resources/presentation/pages/resource_detail_page.dart';
 import '../../features/resources/presentation/pages/training_hub_page.dart';
 import '../../features/saved/presentation/pages/saved_page.dart';
@@ -86,7 +88,8 @@ GoRouter createAppRouter() {
       ),
       GoRoute(
         path: '/resources/detail',
-        builder: (context, state) => const ResourceDetailPage(),
+        builder: (context, state) =>
+            ResourceDetailPage(resource: state.extra as TrainingResource?),
       ),
       GoRoute(
         path: '/opportunities/:id',
@@ -100,7 +103,8 @@ GoRouter createAppRouter() {
       ),
       GoRoute(
         path: '/community/post',
-        builder: (context, state) => const PostDetailPage(),
+        builder: (context, state) =>
+            PostDetailPage(postId: state.extra as String?),
       ),
       GoRoute(
         path: '/government',
@@ -108,7 +112,8 @@ GoRouter createAppRouter() {
       ),
       GoRoute(
         path: '/government/detail',
-        builder: (context, state) => const GovDetailPage(),
+        builder: (context, state) =>
+            GovDetailPage(programme: state.extra as GovProgramme?),
       ),
       GoRoute(
         path: '/settings',
