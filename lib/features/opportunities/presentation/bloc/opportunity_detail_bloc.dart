@@ -7,10 +7,9 @@ import 'opportunity_detail_state.dart';
 class OpportunityDetailBloc
     extends Bloc<OpportunityDetailEvent, OpportunityDetailState> {
   OpportunityDetailBloc({
-    required GetOpportunityById getOpportunityById,
-    required ToggleSavedOpportunity toggleSavedOpportunity,
-  })  : _getOpportunityById = getOpportunityById,
-        _toggleSavedOpportunity = toggleSavedOpportunity,
+    required this._getOpportunityById,
+    required this._toggleSavedOpportunity,
+  }) :
         super(const OpportunityDetailState()) {
     on<LoadOpportunityDetail>(_onLoad);
     on<ToggleSaveOpportunity>(_onToggleSave);
