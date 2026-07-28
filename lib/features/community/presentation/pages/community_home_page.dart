@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/session/current_user_controller.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../injection/injection.dart';
+import '../../domain/usecases/community_usecases.dart';
 import '../bloc/community_bloc.dart';
 
 class CommunityHomePage extends StatelessWidget {
@@ -24,17 +26,156 @@ class _CommunityView extends StatelessWidget {
 
   static const _sectors = ['#AgriTech', '#FinTech', '#EdTech', '#CleanEnergy'];
 
+  Future<void> _createPost(BuildContext context) async {
+    final user = sl<CurrentUserController>().user;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Sign in to post in the community.')),
+      );
+      return;
+    }
+    if (!user.isOpportunityProvider && !user.isPlatformAdmin) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Providers can start community conversations for entrepreneurs to join.',
+          ),
+        ),
+      );
+      return;
+    }
+
+    final bodyController = TextEditingController();
+    final tagsController = TextEditingController(text: '#AgriTech');
+    final posted = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) {
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+            20,
+            16,
+            20,
+            MediaQuery.viewInsetsOf(sheetContext).bottom + 20,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.border,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Share with the community',
+                style: Theme.of(sheetContext).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Invite entrepreneurs to join the conversation around your programmes.',
+                style: Theme.of(sheetContext).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: bodyController,
+                maxLines: 5,
+                decoration: const InputDecoration(
+                  hintText: 'What would you like founders to discuss?',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: tagsController,
+                decoration: const InputDecoration(
+                  hintText: 'Tags (space-separated, e.g. #AgriTech #Funding)',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: () => Navigator.pop(sheetContext, true),
+                  child: const Text('Publish post'),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (posted != true) return;
+    final body = bodyController.text.trim();
+    if (body.isEmpty) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Write a short message before posting.')),
+      );
+      return;
+    }
+    final tags = tagsController.text
+        .split(RegExp(r'\s+'))
+        .map((t) => t.trim())
+        .where((t) => t.isNotEmpty)
+        .map((t) => t.startsWith('#') ? t : '#$t')
+        .toList();
+
+    try {
+      await sl<CreateCommunityPost>()(
+        authorName: user.fullName,
+        authorMeta: user.role,
+        body: body,
+        tags: tags,
+      );
+      if (!context.mounted) return;
+      context.read<CommunityBloc>().add(const CommunityStarted());
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Community post published.')),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Could not post: $e')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final canPost =
+        sl<CurrentUserController>().isOpportunityProvider ||
+        sl<CurrentUserController>().isPlatformAdmin;
+
     return Scaffold(
       backgroundColor: AppColors.background,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: AppColors.accent,
-        foregroundColor: AppColors.primaryDark,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        child: const Icon(Icons.add, size: 28),
-      ),
+      floatingActionButton: canPost
+          ? FloatingActionButton(
+              onPressed: () => _createPost(context),
+              backgroundColor: AppColors.accent,
+              foregroundColor: AppColors.primaryDark,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: const Icon(Icons.add, size: 28),
+            )
+          : null,
       body: SafeArea(
         child: Column(
           children: [
@@ -53,16 +194,12 @@ class _CommunityView extends StatelessWidget {
                     },
                     icon: const Icon(Icons.arrow_back),
                   ),
-                  Text(
-                    'Community',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.search),
+                  Expanded(
+                    child: Text(
+                      'Community',
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.w700),
+                    ),
                   ),
                   IconButton(
                     onPressed: () => context.push('/settings'),
@@ -71,10 +208,35 @@ class _CommunityView extends StatelessWidget {
                 ],
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppColors.mint,
+                      AppColors.mint.withValues(alpha: 0.35),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Text(
+                  canPost
+                      ? 'Share updates and invite entrepreneurs into conversations around your programmes.'
+                      : 'Learn from peers and opportunity providers. Join topics that match your venture.',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.primaryDark,
+                    height: 1.35,
+                  ),
+                ),
+              ),
+            ),
             Align(
               alignment: Alignment.centerLeft,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                 child: Text(
                   'TRENDING SECTORS',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
@@ -137,7 +299,17 @@ class _CommunityView extends StatelessWidget {
 
                   final posts = state.posts;
                   if (posts.isEmpty) {
-                    return const Center(child: Text('No posts yet.'));
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Text(
+                          canPost
+                              ? 'No posts yet. Tap + to start the first conversation.'
+                              : 'No posts yet. Check back soon.',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    );
                   }
 
                   return ListView.separated(
@@ -184,7 +356,7 @@ class _CommunityError extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
+            Icon(
               Icons.cloud_off_outlined,
               size: 40,
               color: AppColors.textMuted,
@@ -276,7 +448,7 @@ class _PostCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Icon(Icons.more_horiz, color: AppColors.textMuted),
+                Icon(Icons.more_horiz, color: AppColors.textMuted),
               ],
             ),
             const SizedBox(height: 12),
@@ -313,7 +485,7 @@ class _PostCard extends StatelessWidget {
                   color: AppColors.mint,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.local_shipping_outlined,
                   size: 48,
                   color: AppColors.primary,

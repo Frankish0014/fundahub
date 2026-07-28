@@ -63,6 +63,27 @@ class _GovProgrammesView extends StatelessWidget {
               ),
             ),
             Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF4E5),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: const Color(0xFFE8A317).withValues(alpha: 0.35),
+                  ),
+                ),
+                child: Text(
+                  'Official programmes from ministries and development boards. Verified listings only — check deadlines before you apply.',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                    height: 1.35,
+                  ),
+                ),
+              ),
+            ),
+            Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: TextField(
                 decoration: InputDecoration(
@@ -72,11 +93,11 @@ class _GovProgrammesView extends StatelessWidget {
                   fillColor: AppColors.surface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: AppColors.border),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: AppColors.border),
                   ),
                 ),
               ),
@@ -175,7 +196,7 @@ class _GovError extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
+          Icon(
             Icons.cloud_off_outlined,
             size: 40,
             color: AppColors.textMuted,
@@ -253,7 +274,7 @@ class _ProgrammeCard extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.verified,
                           size: 14,
                           color: AppColors.verified,

@@ -18,6 +18,7 @@ class ResourcesFirestoreDataSource implements ResourcesRemoteDataSource {
   ResourcesFirestoreDataSource(this._firestore);
 
   final FirebaseFirestore _firestore;
+  bool _seedChecked = false;
 
   static const _pathsCollection = 'training_paths';
   static const _resourcesCollection = 'training_resources';
@@ -116,7 +117,9 @@ class ResourcesFirestoreDataSource implements ResourcesRemoteDataSource {
   // --- seeding ---------------------------------------------------------------
 
   Future<void> _ensureSeeded() async {
+    if (_seedChecked) return;
     final existing = await _paths.limit(1).get();
+    _seedChecked = true;
     if (existing.docs.isNotEmpty) return;
 
     final batch = _firestore.batch();

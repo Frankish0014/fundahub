@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/opportunity_card.dart';
@@ -13,7 +14,8 @@ class SavedPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => SavedBloc(getSaved: sl())..add(const SavedStarted()),
+      create: (_) => SavedBloc(getSaved: sl(), getCurrentUser: sl())
+        ..add(const SavedStarted()),
       child: const _SavedView(),
     );
   }
@@ -53,7 +55,13 @@ class _SavedView extends StatelessWidget {
                     itemCount: state.items.length,
                     separatorBuilder: (_, _) => const SizedBox(height: 12),
                     itemBuilder: (context, index) {
-                      return OpportunityCard(opportunity: state.items[index]);
+                      final opportunity = state.items[index];
+                      return OpportunityCard(
+                        opportunity: opportunity,
+                        onTap: () => context.push(
+                          '/opportunities/${opportunity.id}',
+                        ),
+                      );
                     },
                   );
                 },

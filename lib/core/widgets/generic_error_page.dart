@@ -25,7 +25,7 @@ class GenericErrorPage extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 12, 8, 8),
               child: Row(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 16,
                     backgroundColor: AppColors.primary,
                     child: Icon(
@@ -45,7 +45,7 @@ class GenericErrorPage extends StatelessWidget {
                   const Spacer(),
                   IconButton(
                     onPressed: () => context.push('/settings'),
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.settings_outlined,
                       color: AppColors.primary,
                     ),
@@ -72,7 +72,7 @@ class GenericErrorPage extends StatelessWidget {
                               color: AppColors.mint.withValues(alpha: 0.45),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.laptop_mac,
                               size: 72,
                               color: AppColors.primary,
@@ -145,7 +145,7 @@ class GenericErrorPage extends StatelessWidget {
                       onPressed: () => context.go('/home'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.textPrimary,
-                        side: const BorderSide(color: AppColors.primary),
+                        side: BorderSide(color: AppColors.primary),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),
@@ -165,7 +165,7 @@ class GenericErrorPage extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.info_outline,
                               size: 16,
                               color: AppColors.textMuted,
