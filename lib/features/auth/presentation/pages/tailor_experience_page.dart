@@ -14,7 +14,7 @@ class TailorExperiencePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => sl.createAuthBloc()..add(const AuthStarted()),
+      create: (_) => sl.createAuthBloc(),
       child: const _TailorView(),
     );
   }
