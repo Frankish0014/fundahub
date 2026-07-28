@@ -10,10 +10,10 @@ import 'injection/injection.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform
-    );
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await initDependencies();
-  
+
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,

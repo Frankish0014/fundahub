@@ -5,13 +5,17 @@ import 'package:fundahub/app.dart';
 import 'package:fundahub/features/auth/domain/entities/user_profile.dart';
 import 'package:fundahub/features/auth/domain/repositories/auth_repository.dart';
 import 'package:fundahub/injection/injection.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
-    await initDependencies(authRepositoryOverride: _TestAuthRepository());
+    await initDependencies(
+      authRepositoryOverride: _TestAuthRepository(),
+      firestoreOverride: FakeFirebaseFirestore(),
+    );
   });
 
   testWidgets('Welcome screen shows FundaHub brand', (tester) async {

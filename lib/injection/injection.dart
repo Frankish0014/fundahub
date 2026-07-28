@@ -29,7 +29,7 @@ import '../features/resources/data/datasources/resources_remote_datasource.dart'
 import '../features/resources/data/repositories/resources_repository_impl.dart';
 import '../features/resources/domain/repositories/resources_repository.dart';
 import '../features/resources/domain/usecases/resources_usecases.dart';
-import '../features/opportunities/data/datasources/opportunity_remote_datasource.dart';
+import '../features/opportunities/data/datasources/opportunity_firestore_datasource.dart';
 import '../features/opportunities/data/repositories/opportunity_repository_impl.dart';
 import '../features/opportunities/domain/repositories/opportunity_repository.dart';
 import '../features/opportunities/domain/usecases/opportunity_usecases.dart';
@@ -65,7 +65,10 @@ class ServiceLocator {
   }
 }
 
-Future<void> initDependencies({AuthRepository? authRepositoryOverride}) async {
+Future<void> initDependencies({
+  AuthRepository? authRepositoryOverride,
+  FirebaseFirestore? firestoreOverride,
+}) async {
   final prefs = await SharedPreferences.getInstance();
 
   late final AuthRepository authRepository;
@@ -106,7 +109,8 @@ Future<void> initDependencies({AuthRepository? authRepositoryOverride}) async {
     HasCompletedOnboarding(authRepository),
   );
 
-  final opportunityDataSource = OpportunityMockDataSource();
+  final FirebaseFirestore firestore = firestoreOverride ?? FirebaseFirestore.instance;
+  final opportunityDataSource = OpportunityFirestoreDataSource(firestore);
   final opportunityRepository = OpportunityRepositoryImpl(
     opportunityDataSource,
   );
@@ -122,6 +126,18 @@ Future<void> initDependencies({AuthRepository? authRepositoryOverride}) async {
   );
   sl.registerSingleton<ToggleSavedOpportunity>(
     ToggleSavedOpportunity(opportunityRepository),
+  );
+  sl.registerSingleton<GetOpportunityById>(
+    GetOpportunityById(opportunityRepository),
+  );
+  sl.registerSingleton<CreateOpportunity>(
+    CreateOpportunity(opportunityRepository),
+  );
+  sl.registerSingleton<UpdateOpportunity>(
+    UpdateOpportunity(opportunityRepository),
+  );
+  sl.registerSingleton<DeleteOpportunity>(
+    DeleteOpportunity(opportunityRepository),
   );
 
   final notificationDataSource = NotificationMockDataSource();

@@ -23,10 +23,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -65,5 +62,15 @@ class DefaultFirebaseOptions {
     messagingSenderId: '382670022014',
     projectId: 'fundahub-f13b4',
     storageBucket: 'fundahub-f13b4.firebasestorage.app',
+  );
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyCDdyK9oSY4RI7MQyfn6LGneAVn9xIaABI',
+    appId: '1:382670022014:ios:1f90d6ba8fb30bad777f2f',
+    messagingSenderId: '382670022014',
+    projectId: 'fundahub-f13b4',
+    storageBucket: 'fundahub-f13b4.firebasestorage.app',
+    androidClientId: '382670022014-odm3foctqchhrgqsfhqvup71oo08quk9.apps.googleusercontent.com',
+    iosClientId: '382670022014-pojv4e9d2qdh161hs2mna6prr42g5cuk.apps.googleusercontent.com',
+    iosBundleId: 'com.fundahub.fundahub',
   );
 }
