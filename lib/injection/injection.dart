@@ -3,6 +3,7 @@
 // service locator's `Map<Type, Object>`.
 import 'package:cloud_firestore/cloud_firestore.dart' show FirebaseFirestore;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -73,9 +74,13 @@ Future<void> initDependencies({AuthRepository? authRepositoryOverride}) async {
   } else {
     final googleSignIn = GoogleSignIn.instance;
     const webClientId = String.fromEnvironment('GOOGLE_WEB_CLIENT_ID');
-    await googleSignIn.initialize(
-      serverClientId: webClientId.isEmpty ? null : webClientId,
-    );
+    // Web requires a client ID; skip init so email/password still works in Chrome.
+    if (!kIsWeb || webClientId.isNotEmpty) {
+      await googleSignIn.initialize(
+        clientId: kIsWeb ? webClientId : null,
+        serverClientId: webClientId.isEmpty ? null : webClientId,
+      );
+    }
 
     final authLocal = AuthLocalDataSource(prefs);
     final authRemote = FirebaseAuthRemoteDataSource(
