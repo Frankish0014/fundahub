@@ -12,6 +12,12 @@ abstract class CommunityRemoteDataSource {
     required String authorName,
     required String body,
   });
+  Future<String> createPost({
+    required String authorName,
+    required String authorMeta,
+    required String body,
+    List<String> tags = const [],
+  });
 }
 
 /// Firestore-backed community datasource.
@@ -23,6 +29,7 @@ class CommunityFirestoreDataSource implements CommunityRemoteDataSource {
   CommunityFirestoreDataSource(this._firestore);
 
   final FirebaseFirestore _firestore;
+  bool _seedChecked = false;
 
   static const _postsCollection = 'community_posts';
   static const _commentsCollection = 'comments';
@@ -80,6 +87,27 @@ class CommunityFirestoreDataSource implements CommunityRemoteDataSource {
     await postRef.update({'commentCount': FieldValue.increment(1)});
   }
 
+  @override
+  Future<String> createPost({
+    required String authorName,
+    required String authorMeta,
+    required String body,
+    List<String> tags = const [],
+  }) async {
+    final ref = await _posts.add({
+      'authorName': authorName,
+      'authorMeta': authorMeta,
+      'body': body,
+      'tags': tags,
+      'likes': 0,
+      'commentCount': 0,
+      'hasImage': false,
+      'isQuote': false,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+    return ref.id;
+  }
+
   // --- mapping helpers -------------------------------------------------------
 
   CommunityPost _postFromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
@@ -125,7 +153,9 @@ class CommunityFirestoreDataSource implements CommunityRemoteDataSource {
   /// app runs against an empty collection. Idempotent: does nothing once the
   /// collection has documents.
   Future<void> _ensureSeeded() async {
+    if (_seedChecked) return;
     final existing = await _posts.limit(1).get();
+    _seedChecked = true;
     if (existing.docs.isNotEmpty) return;
 
     final now = DateTime.now();

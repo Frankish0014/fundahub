@@ -38,7 +38,7 @@ class SearchNoResultsView extends StatelessWidget {
               borderRadius: BorderRadius.circular(22),
               border: Border.all(color: AppColors.border),
             ),
-            child: const Stack(
+            child: Stack(
               alignment: Alignment.center,
               children: [
                 Icon(Icons.search, size: 48, color: AppColors.primary),
@@ -104,7 +104,7 @@ class SearchNoResultsView extends StatelessWidget {
             onPressed: onBrowseAll,
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.textPrimary,
-              side: const BorderSide(color: AppColors.borderStrong),
+              side: BorderSide(color: AppColors.borderStrong),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
               ),

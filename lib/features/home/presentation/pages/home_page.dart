@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/locale/app_strings.dart';
+import '../../../../core/session/current_user_controller.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/opportunity_card.dart';
 import '../../../../injection/injection.dart';
@@ -14,9 +16,11 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-          HomeBloc(getCurrentUser: sl(), getRecommended: sl())
-            ..add(const HomeStarted()),
+      create: (_) => HomeBloc(
+        getCurrentUser: sl(),
+        getRecommended: sl(),
+        currentUser: sl(),
+      )..add(const HomeStarted()),
       child: const _HomeView(),
     );
   }
@@ -27,11 +31,18 @@ class _HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HomeBloc, HomeState>(
-      builder: (context, state) {
-        final name = state.user?.firstName ?? 'Andrew';
+    return ListenableBuilder(
+      listenable: sl<CurrentUserController>(),
+      builder: (context, _) {
+        return BlocBuilder<HomeBloc, HomeState>(
+          builder: (context, state) {
+            final s = AppStrings.of(context);
+            // Prefer live session profile so edits show immediately.
+            final liveUser = sl<CurrentUserController>().user ?? state.user;
+            final name = liveUser?.fullName.trim();
+            final hasName = name != null && name.isNotEmpty;
 
-        return Scaffold(
+            return Scaffold(
           backgroundColor: AppColors.background,
           body: CustomScrollView(
             slivers: [
@@ -47,7 +58,7 @@ class _HomeView extends StatelessWidget {
                         right: 20,
                         bottom: 48,
                       ),
-                      decoration: const BoxDecoration(color: AppColors.primary),
+                      decoration: BoxDecoration(color: AppColors.primary),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -56,7 +67,7 @@ class _HomeView extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Welcome back,',
+                                  s.welcomeBackName(name ?? ''),
                                   style: Theme.of(context).textTheme.bodyMedium
                                       ?.copyWith(
                                         color: AppColors.onPrimary.withValues(
@@ -64,16 +75,17 @@ class _HomeView extends StatelessWidget {
                                         ),
                                       ),
                                 ),
-                                Text(
-                                  name,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineSmall
-                                      ?.copyWith(
-                                        color: AppColors.onPrimary,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                ),
+                                if (hasName)
+                                  Text(
+                                    name,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall
+                                        ?.copyWith(
+                                          color: AppColors.onPrimary,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                  ),
                               ],
                             ),
                           ),
@@ -99,7 +111,7 @@ class _HomeView extends StatelessWidget {
                           readOnly: true,
                           onTap: () => context.go('/home/search'),
                           decoration: InputDecoration(
-                            hintText: 'Search grants, accelerators...',
+                            hintText: s.searchHint,
                             prefixIcon: const Icon(Icons.search),
                             filled: true,
                             fillColor: AppColors.surface,
@@ -125,14 +137,17 @@ class _HomeView extends StatelessWidget {
                   child: Row(
                     children: [
                       Text(
-                        'Recommended for you',
+                        s.recommendedForYou,
                         style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.w700),
+                            ?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textPrimary,
+                            ),
                       ),
                       const Spacer(),
                       TextButton(
                         onPressed: () => context.go('/home/search'),
-                        child: const Text('See all'),
+                        child: Text(s.seeAll),
                       ),
                     ],
                   ),
@@ -144,29 +159,82 @@ class _HomeView extends StatelessWidget {
                     final carouselH = OpportunityCard.carouselHeight(context);
                     final cardW = (MediaQuery.sizeOf(context).width * 0.78)
                         .clamp(260.0, 320.0);
+
+                    if (state.status == HomeStatus.loading ||
+                        state.status == HomeStatus.initial) {
+                      return SizedBox(
+                        height: carouselH,
+                        child: const Center(child: CircularProgressIndicator()),
+                      );
+                    }
+
+                    if (state.status == HomeStatus.failure) {
+                      return SizedBox(
+                        height: carouselH,
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Could not load opportunities.',
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                                const SizedBox(height: 8),
+                                TextButton(
+                                  onPressed: () => context
+                                      .read<HomeBloc>()
+                                      .add(const HomeStarted()),
+                                  child: Text(s.retry),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+
+                    if (state.recommended.isEmpty) {
+                      return SizedBox(
+                        height: carouselH,
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Text(
+                              'No opportunities yet. Pull to refresh or open Search.',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(color: AppColors.textMuted),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+
                     return SizedBox(
                       height: carouselH,
-                      child: state.status == HomeStatus.loading
-                          ? const Center(child: CircularProgressIndicator())
-                          : ListView.separated(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
+                      child: ListView.separated(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: state.recommended.length,
+                        separatorBuilder: (_, _) => const SizedBox(width: 12),
+                        itemBuilder: (context, index) {
+                          final opportunity = state.recommended[index];
+                          return SizedBox(
+                            width: cardW,
+                            height: carouselH,
+                            child: OpportunityCard(
+                              opportunity: opportunity,
+                              dense: true,
+                              onTap: () => context.push(
+                                '/opportunities/${opportunity.id}',
                               ),
-                              scrollDirection: Axis.horizontal,
-                              itemCount: state.recommended.length,
-                              separatorBuilder: (_, _) =>
-                                  const SizedBox(width: 12),
-                              itemBuilder: (context, index) {
-                                return SizedBox(
-                                  width: cardW,
-                                  height: carouselH,
-                                  child: OpportunityCard(
-                                    opportunity: state.recommended[index],
-                                    dense: true,
-                                  ),
-                                );
-                              },
                             ),
+                          );
+                        },
+                      ),
                     );
                   },
                 ),
@@ -176,9 +244,10 @@ class _HomeView extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
-                    'Categories',
+                    s.categories,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                 ),
@@ -198,23 +267,38 @@ class _HomeView extends StatelessWidget {
                       childAspectRatio: aspect,
                       children: AppConstants.categories
                           .map(
-                            (category) => Container(
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.surface,
+                            (category) => Material(
+                              color: AppColors.surface,
+                              borderRadius: BorderRadius.circular(14),
+                              child: InkWell(
                                 borderRadius: BorderRadius.circular(14),
-                                border: Border.all(color: AppColors.border),
-                              ),
-                              child: Text(
-                                category,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.titleMedium
-                                    ?.copyWith(fontWeight: FontWeight.w600),
+                                onTap: () => context.go(
+                                  '/home/search',
+                                  extra: category,
+                                ),
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(color: AppColors.border),
+                                  ),
+                                  child: Text(
+                                    s.categoryLabel(category),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.textPrimary,
+                                        ),
+                                  ),
+                                ),
                               ),
                             ),
                           )
@@ -226,6 +310,8 @@ class _HomeView extends StatelessWidget {
               const SliverToBoxAdapter(child: SizedBox(height: 24)),
             ],
           ),
+        );
+          },
         );
       },
     );

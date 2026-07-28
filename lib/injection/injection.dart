@@ -1,12 +1,21 @@
+import 'dart:async';
+
 // Import only FirebaseFirestore: cloud_firestore also exports a `Type` class
 // (Pipeline API) that would otherwise shadow dart:core's Type used by the
 // service locator's `Map<Type, Object>`.
 import 'package:cloud_firestore/cloud_firestore.dart' show FirebaseFirestore;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../core/locale/app_locale_controller.dart';
+import '../core/session/app_session.dart';
+import '../core/session/current_user_controller.dart';
+import '../core/session/pending_moderation_controller.dart';
+import '../core/session/platform_super_admin_seed.dart';
+import '../core/theme/app_appearance_controller.dart';
 import '../features/auth/data/datasources/auth_local_datasource.dart';
 import '../features/auth/data/datasources/auth_remote_datasource.dart';
 import '../features/auth/data/repositories/auth_repository_impl.dart';
@@ -29,9 +38,13 @@ import '../features/resources/data/datasources/resources_remote_datasource.dart'
 import '../features/resources/data/repositories/resources_repository_impl.dart';
 import '../features/resources/domain/repositories/resources_repository.dart';
 import '../features/resources/domain/usecases/resources_usecases.dart';
+import '../features/opportunities/data/datasources/application_firestore_datasource.dart';
 import '../features/opportunities/data/datasources/opportunity_firestore_datasource.dart';
+import '../features/opportunities/data/repositories/application_repository_impl.dart';
 import '../features/opportunities/data/repositories/opportunity_repository_impl.dart';
+import '../features/opportunities/domain/repositories/application_repository.dart';
 import '../features/opportunities/domain/repositories/opportunity_repository.dart';
+import '../features/opportunities/domain/usecases/application_usecases.dart';
 import '../features/opportunities/domain/usecases/opportunity_usecases.dart';
 
 final sl = ServiceLocator();
@@ -70,6 +83,9 @@ Future<void> initDependencies({
   FirebaseFirestore? firestoreOverride,
 }) async {
   final prefs = await SharedPreferences.getInstance();
+  sl.registerSingleton<AppSession>(AppSession(prefs));
+  final currentUserController = CurrentUserController();
+  sl.registerSingleton<CurrentUserController>(currentUserController);
 
   late final AuthRepository authRepository;
   if (authRepositoryOverride != null) {
@@ -79,10 +95,16 @@ Future<void> initDependencies({
     const webClientId = String.fromEnvironment('GOOGLE_WEB_CLIENT_ID');
     // Web requires a client ID; skip init so email/password still works in Chrome.
     if (!kIsWeb || webClientId.isNotEmpty) {
-      await googleSignIn.initialize(
-        clientId: kIsWeb ? webClientId : null,
-        serverClientId: webClientId.isEmpty ? null : webClientId,
-      );
+      try {
+        await googleSignIn
+            .initialize(
+              clientId: kIsWeb ? webClientId : null,
+              serverClientId: webClientId.isEmpty ? null : webClientId,
+            )
+            .timeout(const Duration(seconds: 8));
+      } catch (_) {
+        // Google Sign-In CDN may be blocked; email/password auth still works.
+      }
     }
 
     final authLocal = AuthLocalDataSource(prefs);
@@ -91,9 +113,29 @@ Future<void> initDependencies({
       googleSignIn,
     );
 
-    authRepository = AuthRepositoryImpl(authRemote, authLocal);
+    authRepository = AuthRepositoryImpl(
+      authRemote,
+      authLocal,
+      firestore: FirebaseFirestore.instance,
+      storage: FirebaseStorage.instance,
+      currentUser: currentUserController,
+    );
   }
   sl.registerSingleton<AuthRepository>(authRepository);
+
+  // Ensure the official Platform Super Admin account exists in Firebase.
+  unawaited(ensurePlatformSuperAdmin());
+
+  final cachedUser = await authRepository.getCurrentUser();
+  if (cachedUser != null) {
+    currentUserController.apply(cachedUser);
+  }
+  sl.registerSingleton<AppLocaleController>(
+    AppLocaleController(prefs, cachedUser?.language),
+  );
+  sl.registerSingleton<AppAppearanceController>(
+    AppAppearanceController(prefs),
+  );
   sl.registerSingleton<RegisterUser>(RegisterUser(authRepository));
   sl.registerSingleton<LoginUser>(LoginUser(authRepository));
   sl.registerSingleton<SignInWithGoogle>(SignInWithGoogle(authRepository));
@@ -124,6 +166,9 @@ Future<void> initDependencies({
   sl.registerSingleton<GetSavedOpportunities>(
     GetSavedOpportunities(opportunityRepository),
   );
+  sl.registerSingleton<GetMyOpportunities>(
+    GetMyOpportunities(opportunityRepository),
+  );
   sl.registerSingleton<ToggleSavedOpportunity>(
     ToggleSavedOpportunity(opportunityRepository),
   );
@@ -139,8 +184,41 @@ Future<void> initDependencies({
   sl.registerSingleton<DeleteOpportunity>(
     DeleteOpportunity(opportunityRepository),
   );
+  sl.registerSingleton<GetPendingOpportunities>(
+    GetPendingOpportunities(opportunityRepository),
+  );
+  sl.registerSingleton<GetAllOpportunitiesForAdmin>(
+    GetAllOpportunitiesForAdmin(opportunityRepository),
+  );
+  sl.registerSingleton<ReviewOpportunity>(
+    ReviewOpportunity(opportunityRepository),
+  );
 
-  final notificationDataSource = NotificationMockDataSource();
+  final applicationDataSource = ApplicationFirestoreDataSource(firestore);
+  final applicationRepository = ApplicationRepositoryImpl(
+    applicationDataSource,
+  );
+  sl.registerSingleton<ApplicationRepository>(applicationRepository);
+  sl.registerSingleton<SubmitApplication>(
+    SubmitApplication(applicationRepository),
+  );
+  sl.registerSingleton<GetMyApplicationForOpportunity>(
+    GetMyApplicationForOpportunity(applicationRepository),
+  );
+  sl.registerSingleton<GetProviderApplications>(
+    GetProviderApplications(applicationRepository),
+  );
+  sl.registerSingleton<GetOpportunityApplications>(
+    GetOpportunityApplications(applicationRepository),
+  );
+  sl.registerSingleton<GetApplicationById>(
+    GetApplicationById(applicationRepository),
+  );
+  sl.registerSingleton<ReviewApplication>(
+    ReviewApplication(applicationRepository),
+  );
+
+  final notificationDataSource = NotificationFirestoreDataSource(firestore);
   final notificationRepository = NotificationRepositoryImpl(
     notificationDataSource,
   );
@@ -148,6 +226,23 @@ Future<void> initDependencies({
   sl.registerSingleton<GetNotifications>(
     GetNotifications(notificationRepository),
   );
+  sl.registerSingleton<CreateAnnouncement>(
+    CreateAnnouncement(notificationRepository),
+  );
+  sl.registerSingleton<GetPendingAnnouncements>(
+    GetPendingAnnouncements(notificationRepository),
+  );
+  sl.registerSingleton<ReviewAnnouncement>(
+    ReviewAnnouncement(notificationRepository),
+  );
+
+  final pendingModeration = PendingModerationController(
+    currentUser: currentUserController,
+    getPendingOpportunities: sl(),
+    getPendingAnnouncements: sl(),
+  );
+  sl.registerSingleton<PendingModerationController>(pendingModeration);
+  pendingModeration.start();
 
   _registerFirestoreContent();
 }
@@ -174,6 +269,9 @@ void _registerFirestoreContent() {
   sl.registerSingleton<GetCommunityPost>(GetCommunityPost(communityRepository));
   sl.registerSingleton<GetPostComments>(GetPostComments(communityRepository));
   sl.registerSingleton<AddPostComment>(AddPostComment(communityRepository));
+  sl.registerSingleton<CreateCommunityPost>(
+    CreateCommunityPost(communityRepository),
+  );
 
   final governmentRepository = GovernmentRepositoryImpl(
     GovernmentFirestoreDataSource(firestore),

@@ -35,7 +35,7 @@ class SavedEmptyView extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.bookmark_border,
                     size: 48,
                     color: AppColors.primary,
@@ -64,7 +64,7 @@ class SavedEmptyView extends StatelessWidget {
                   child: Container(
                     width: 32,
                     height: 32,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: AppColors.primary,
                       shape: BoxShape.circle,
                     ),

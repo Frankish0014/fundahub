@@ -19,9 +19,17 @@ abstract class AuthRepository {
   Future<UserProfile> updateProfile({
     required String fullName,
     required String role,
+    String? bio,
+    String? photoUrl,
+    String? language,
   });
 
   Future<UserProfile> updateInterests(List<String> interests);
+
+  Future<UserProfile> uploadProfilePhoto({
+    required List<int> bytes,
+    required String fileName,
+  });
 
   Future<void> logout();
 

@@ -62,11 +62,20 @@ class _TestAuthRepository implements AuthRepository {
   Future<UserProfile> updateProfile({
     required String fullName,
     required String role,
+    String? bio,
+    String? photoUrl,
+    String? language,
   }) => throw UnimplementedError();
 
   @override
   Future<UserProfile> updateInterests(List<String> interests) =>
       throw UnimplementedError();
+
+  @override
+  Future<UserProfile> uploadProfilePhoto({
+    required List<int> bytes,
+    required String fileName,
+  }) => throw UnimplementedError();
 
   @override
   Future<void> logout() async {}

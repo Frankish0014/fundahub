@@ -58,7 +58,7 @@ class ResourceDetailPage extends StatelessWidget {
                     ),
                     if (r.readTime.isNotEmpty) ...[
                       const SizedBox(width: 10),
-                      const Icon(
+                      Icon(
                         Icons.schedule,
                         size: 16,
                         color: AppColors.textMuted,
@@ -115,7 +115,7 @@ class ResourceDetailPage extends StatelessWidget {
                     color: AppColors.mint,
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.laptop_mac,
                     size: 64,
                     color: AppColors.primary,

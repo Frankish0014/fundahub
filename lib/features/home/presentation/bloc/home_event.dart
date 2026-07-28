@@ -10,3 +10,16 @@ sealed class HomeEvent extends Equatable {
 class HomeStarted extends HomeEvent {
   const HomeStarted();
 }
+
+class HomeRefreshed extends HomeEvent {
+  const HomeRefreshed();
+}
+
+class HomeUserSynced extends HomeEvent {
+  const HomeUserSynced(this.user);
+
+  final UserProfile? user;
+
+  @override
+  List<Object?> get props => [user];
+}

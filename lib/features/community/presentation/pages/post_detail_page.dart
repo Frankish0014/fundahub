@@ -54,12 +54,12 @@ class _PostDetailView extends StatelessWidget {
             onPressed: () => context.push('/settings'),
             icon: const Icon(Icons.settings_outlined),
           ),
-          const Padding(
-            padding: EdgeInsets.only(right: 12),
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
             child: CircleAvatar(
               radius: 14,
               backgroundColor: AppColors.avatarBg,
-              child: Text('A', style: TextStyle(fontSize: 12)),
+              child: const Text('A', style: TextStyle(fontSize: 12)),
             ),
           ),
         ],
@@ -124,7 +124,7 @@ class _PostDetailView extends StatelessWidget {
                           ),
                           child: Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.verified,
                                 size: 14,
                                 color: AppColors.verified,
@@ -157,7 +157,7 @@ class _PostDetailView extends StatelessWidget {
                           color: AppColors.mint,
                           borderRadius: BorderRadius.circular(14),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.groups_outlined,
                           size: 56,
                           color: AppColors.primary,
@@ -210,7 +210,7 @@ class _PostDetailView extends StatelessWidget {
   }
 
   List<Widget> _buildComments(List<PostComment> comments) {
-    const palette = [AppColors.accent, AppColors.primary, Color(0xFF5B8A8A)];
+    final palette = [AppColors.accent, AppColors.primary, Color(0xFF5B8A8A)];
     final widgets = <Widget>[];
     for (var i = 0; i < comments.length; i++) {
       final c = comments[i];
@@ -281,13 +281,13 @@ class _CommentComposerState extends State<_CommentComposer> {
         16,
         10 + MediaQuery.paddingOf(context).bottom,
       ),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surface,
         border: Border(top: BorderSide(color: AppColors.border)),
       ),
       child: Row(
         children: [
-          const CircleAvatar(
+          CircleAvatar(
             radius: 16,
             backgroundColor: AppColors.avatarBg,
             child: Text('A', style: TextStyle(fontSize: 12)),
@@ -316,7 +316,7 @@ class _CommentComposerState extends State<_CommentComposer> {
                     height: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Icon(Icons.send_rounded, color: AppColors.primary),
+                : Icon(Icons.send_rounded, color: AppColors.primary),
           ),
         ],
       ),
