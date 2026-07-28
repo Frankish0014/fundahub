@@ -31,6 +31,22 @@ class LoginUser {
   }
 }
 
+class SignInWithGoogle {
+  const SignInWithGoogle(this._repository);
+
+  final AuthRepository _repository;
+
+  Future<UserProfile> call() => _repository.signInWithGoogle();
+}
+
+class SendPasswordResetEmail {
+  const SendPasswordResetEmail(this._repository);
+
+  final AuthRepository _repository;
+
+  Future<void> call(String email) => _repository.sendPasswordResetEmail(email);
+}
+
 class UpdateUserInterests {
   const UpdateUserInterests(this._repository);
 

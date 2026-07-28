@@ -2,11 +2,95 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../features/auth/domain/entities/user_profile.dart';
 import '../../../../features/auth/domain/repositories/auth_repository.dart';
 import '../../../../injection/injection.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
+
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  UserProfile? _user;
+  bool _isLoading = true;
+  bool _isLoggingOut = false;
+  String? _errorMessage;
+
+  AuthRepository get _authRepository => sl<AuthRepository>();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentUser();
+  }
+
+  Future<void> _loadCurrentUser() async {
+    try {
+      final user = await _authRepository.getCurrentUser();
+
+      if (!mounted) return;
+
+      setState(() {
+        _user = user;
+        _isLoading = false;
+
+        if (user == null) {
+          _errorMessage = 'No signed-in user was found.';
+        } else {
+          _errorMessage = null;
+        }
+      });
+    } catch (error) {
+      if (!mounted) return;
+
+      setState(() {
+        _errorMessage = 'Could not load your account information.';
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _openEditProfile() async {
+    await context.push('/edit-profile');
+
+    if (!mounted) return;
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    await _loadCurrentUser();
+  }
+
+  Future<void> _logout() async {
+    if (_isLoggingOut) return;
+
+    setState(() {
+      _isLoggingOut = true;
+    });
+
+    try {
+      await _authRepository.logout();
+
+      if (!mounted) return;
+
+      context.go('/login');
+    } catch (error) {
+      if (!mounted) return;
+
+      setState(() {
+        _isLoggingOut = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not log out. Please try again.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,150 +110,200 @@ class SettingsPage extends StatelessWidget {
         ),
         centerTitle: false,
       ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-        children: [
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.border),
-            ),
-            child: Row(
-              children: [
-                const CircleAvatar(
-                  radius: 28,
-                  backgroundColor: AppColors.avatarBg,
-                  child: Text('J'),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Jean-Luc Bizimana',
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.w700),
-                      ),
-                      Text(
-                        'Agri-Tech Founder',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
+      body: _buildBody(context),
+    );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_errorMessage != null || _user == null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.error_outline,
+                size: 48,
+                color: AppColors.textSecondary,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                _errorMessage ?? 'Could not find your profile.',
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _isLoading = true;
+                    _errorMessage = null;
+                  });
+
+                  _loadCurrentUser();
+                },
+                child: const Text('Try Again'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final user = _user!;
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+      children: [
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 28,
+                backgroundColor: AppColors.avatarBg,
+                child: Text(
+                  user.initial,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 22),
-          _sectionLabel(context, 'ACCOUNT & SECURITY'),
-          _settingsCard(
-            context,
-            children: [
-              _tile(
-                context,
-                icon: Icons.person_outline,
-                label: 'Account',
-                onTap: () => context.push('/edit-profile'),
               ),
-              const Divider(height: 1),
-              _tile(
-                context,
-                icon: Icons.notifications_none,
-                label: 'Notification Settings',
-                onTap: () => context.push('/notification-settings'),
-              ),
-              const Divider(height: 1),
-              _tile(
-                context,
-                icon: Icons.lock_outline,
-                label: 'Privacy',
-                onTap: () {},
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      user.firstName,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      user.role,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 18),
-          _sectionLabel(context, 'PREFERENCES'),
-          _settingsCard(
-            context,
+        ),
+        const SizedBox(height: 22),
+        _sectionLabel(context, 'ACCOUNT & SECURITY'),
+        _settingsCard(
+          context,
+          children: [
+            _tile(
+              context,
+              icon: Icons.person_outline,
+              label: 'Account',
+              onTap: _openEditProfile,
+            ),
+            const Divider(height: 1),
+            _tile(
+              context,
+              icon: Icons.notifications_none,
+              label: 'Notification Settings',
+              onTap: () => context.push('/notification-settings'),
+            ),
+            const Divider(height: 1),
+            _tile(
+              context,
+              icon: Icons.lock_outline,
+              label: 'Privacy',
+              onTap: () {},
+            ),
+          ],
+        ),
+        const SizedBox(height: 18),
+        _sectionLabel(context, 'PREFERENCES'),
+        _settingsCard(
+          context,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.language, color: AppColors.primary),
+              title: const Text('Language'),
+              subtitle: const Text('English'),
+              trailing: const Icon(Icons.keyboard_arrow_down),
+              onTap: () {},
+            ),
+          ],
+        ),
+        const SizedBox(height: 18),
+        _sectionLabel(context, 'SUPPORT'),
+        _settingsCard(
+          context,
+          children: [
+            _tile(
+              context,
+              icon: Icons.help_outline,
+              label: 'Help Center',
+              onTap: () {},
+            ),
+            const Divider(height: 1),
+            _tile(
+              context,
+              icon: Icons.description_outlined,
+              label: 'Terms of Service',
+              onTap: () {},
+            ),
+          ],
+        ),
+        const SizedBox(height: 18),
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: ListTile(
+            leading: const Icon(Icons.logout, color: AppColors.danger),
+            title: Text(
+              _isLoggingOut ? 'Logging out...' : 'Logout',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: AppColors.danger,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            onTap: _isLoggingOut ? null : _logout,
+          ),
+        ),
+        const SizedBox(height: 28),
+        Center(
+          child: Column(
             children: [
-              ListTile(
-                leading: const Icon(Icons.language, color: AppColors.primary),
-                title: const Text('Language'),
-                subtitle: const Text('English'),
-                trailing: const Icon(Icons.keyboard_arrow_down),
-                onTap: () {},
+              Text(
+                'FundaHub v2.4.0',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: AppColors.textMuted),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                "Made for Rwanda's Entrepreneurs",
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: AppColors.textMuted),
               ),
             ],
           ),
-          const SizedBox(height: 18),
-          _sectionLabel(context, 'SUPPORT'),
-          _settingsCard(
-            context,
-            children: [
-              _tile(
-                context,
-                icon: Icons.help_outline,
-                label: 'Help Center',
-                onTap: () {},
-              ),
-              const Divider(height: 1),
-              _tile(
-                context,
-                icon: Icons.description_outlined,
-                label: 'Terms of Service',
-                onTap: () {},
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          Container(
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.border),
-            ),
-            child: ListTile(
-              leading: const Icon(Icons.logout, color: AppColors.danger),
-              title: Text(
-                'Logout',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppColors.danger,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              onTap: () async {
-                await sl<AuthRepository>().logout();
-                if (context.mounted) context.go('/login');
-              },
-            ),
-          ),
-          const SizedBox(height: 28),
-          Center(
-            child: Column(
-              children: [
-                Text(
-                  'FundaHub v2.4.0',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: AppColors.textMuted),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  "Made for Rwanda's Entrepreneurs",
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: AppColors.textMuted),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

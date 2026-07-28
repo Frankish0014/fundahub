@@ -1,14 +1,21 @@
 import '../../domain/entities/user_profile.dart';
+import '../../domain/errors/auth_failure.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_local_datasource.dart';
+import '../datasources/auth_remote_datasource.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  AuthRepositoryImpl(this._local);
+  AuthRepositoryImpl(this._remote, this._local);
 
+  final AuthRemoteDataSource _remote;
   final AuthLocalDataSource _local;
 
   @override
-  Future<UserProfile?> getCurrentUser() => _local.getCurrentUser();
+  Future<UserProfile?> getCurrentUser() async {
+    final remoteUser = await _remote.getCurrentUser();
+    if (remoteUser == null) return null;
+    return _profileFromRemote(remoteUser);
+  }
 
   @override
   Future<bool> hasCompletedOnboarding() => _local.hasCompletedOnboarding();
@@ -24,11 +31,18 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
     required String role,
   }) async {
-    // Password validated in presentation; Firebase Auth comes later.
-    if (password.length < 6) {
-      throw ArgumentError('Password must be at least 6 characters');
-    }
-    return _local.saveUser(fullName: fullName, email: email, role: role);
+    final remoteUser = await _remote.register(
+      fullName: fullName,
+      email: email,
+      password: password,
+    );
+    return _local.saveUser(
+      id: remoteUser.id,
+      fullName: fullName,
+      email: remoteUser.email,
+      role: role,
+      emailVerified: remoteUser.emailVerified,
+    );
   }
 
   @override
@@ -36,18 +50,19 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
   }) async {
-    final existing = await _local.getCurrentUser();
-    if (existing != null && existing.email == email) {
-      return existing;
-    }
-    // Demo login creates a session for UI flow until Firebase is wired.
-    return _local.saveUser(
-      fullName: 'Andrew',
-      email: email,
-      role: 'Student Entrepreneur',
-      interests: const ['Tech', 'Education', 'Seed Funding'],
-    );
+    final remoteUser = await _remote.login(email: email, password: password);
+    return _profileFromRemote(remoteUser);
   }
+
+  @override
+  Future<UserProfile> signInWithGoogle() async {
+    final remoteUser = await _remote.signInWithGoogle();
+    return _profileFromRemote(remoteUser);
+  }
+
+  @override
+  Future<void> sendPasswordResetEmail(String email) =>
+      _remote.sendPasswordResetEmail(email);
 
   @override
   Future<UserProfile> updateInterests(List<String> interests) =>
@@ -58,18 +73,66 @@ class AuthRepositoryImpl implements AuthRepository {
     required String fullName,
     required String role,
   }) async {
-    final existing = await _local.getCurrentUser();
+    final existing = await getCurrentUser();
     if (existing == null) {
-      throw StateError('No authenticated user');
+      throw const AuthFailure('You must be logged in to update your profile.');
     }
+    final remoteUser = await _remote.updateDisplayName(fullName);
     return _local.saveUser(
+      id: remoteUser.id,
       fullName: fullName,
-      email: existing.email,
+      email: remoteUser.email,
       role: role,
       interests: existing.interests,
+      emailVerified: remoteUser.emailVerified,
     );
   }
 
   @override
-  Future<void> logout() => _local.clearSession();
+  Future<void> logout() async {
+    await _remote.logout();
+    await _local.clearSession();
+  }
+
+  Future<UserProfile> _profileFromRemote(RemoteAuthUser remoteUser) async {
+    final localUser = await _local.getCurrentUser();
+
+    late final String fullName;
+    late final String role;
+    late final List<String> interests;
+    if (localUser != null && localUser.id == remoteUser.id) {
+      fullName = localUser.fullName.trim().isNotEmpty
+          ? localUser.fullName
+          : remoteUser.displayName.trim().isNotEmpty
+          ? remoteUser.displayName.trim()
+          : _nameFromEmail(remoteUser.email);
+      role = localUser.role;
+      interests = localUser.interests;
+    } else {
+      fullName = remoteUser.displayName.trim().isNotEmpty
+          ? remoteUser.displayName.trim()
+          : _nameFromEmail(remoteUser.email);
+      role = 'Entrepreneur';
+      interests = const <String>[];
+    }
+
+    return _local.saveUser(
+      id: remoteUser.id,
+      fullName: fullName,
+      email: remoteUser.email,
+      role: role,
+      interests: interests,
+      emailVerified: remoteUser.emailVerified,
+    );
+  }
+
+  String _nameFromEmail(String email) {
+    final localPart = email.split('@').first.trim();
+    if (localPart.isEmpty) return 'FundaHub User';
+    return localPart
+        .split(RegExp(r'[._-]+'))
+        .where((part) => part.isNotEmpty)
+        .map((part) => '${part[0].toUpperCase()}${part.substring(1)}')
+        .join(' ');
+  }
 }
