@@ -14,6 +14,7 @@ class GovernmentFirestoreDataSource implements GovernmentRemoteDataSource {
   GovernmentFirestoreDataSource(this._firestore);
 
   final FirebaseFirestore _firestore;
+  bool _seedChecked = false;
 
   static const _collection = 'government_programmes';
 
@@ -87,7 +88,9 @@ class GovernmentFirestoreDataSource implements GovernmentRemoteDataSource {
   // --- seeding ---------------------------------------------------------------
 
   Future<void> _ensureSeeded() async {
+    if (_seedChecked) return;
     final existing = await _programmes.limit(1).get();
+    _seedChecked = true;
     if (existing.docs.isNotEmpty) return;
 
     final batch = _firestore.batch();

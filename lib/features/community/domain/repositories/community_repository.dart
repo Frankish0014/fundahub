@@ -16,4 +16,11 @@ abstract class CommunityRepository {
     required String authorName,
     required String body,
   });
+
+  Future<String> createPost({
+    required String authorName,
+    required String authorMeta,
+    required String body,
+    List<String> tags = const [],
+  });
 }

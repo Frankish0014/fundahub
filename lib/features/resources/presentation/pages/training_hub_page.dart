@@ -68,12 +68,10 @@ class _TrainingHubView extends StatelessWidget {
             child: CircleAvatar(
               radius: 16,
               backgroundColor: AppColors.avatarBg,
-              child: Text(
-                'A',
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w700,
-                ),
+              child: Icon(
+                Icons.school_outlined,
+                size: 16,
+                color: AppColors.primary,
               ),
             ),
           ),
@@ -90,7 +88,7 @@ class _TrainingHubView extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.cloud_off_outlined,
                     size: 40,
                     color: AppColors.textMuted,
@@ -115,6 +113,42 @@ class _TrainingHubView extends StatelessWidget {
           return ListView(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
             children: [
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppColors.primary,
+                      AppColors.primary.withValues(alpha: 0.82),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Build founder skills',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: AppColors.onPrimary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Short paths and guides for pitching, legal basics, and cash-flow — curated for African entrepreneurs.',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.onPrimary.withValues(alpha: 0.9),
+                        height: 1.35,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
               TextField(
                 decoration: InputDecoration(
                   hintText: 'Search for skills, topics, or guides...',
@@ -123,11 +157,11 @@ class _TrainingHubView extends StatelessWidget {
                   fillColor: AppColors.surface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: AppColors.border),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: AppColors.border),
                   ),
                 ),
               ),
@@ -141,7 +175,13 @@ class _TrainingHubView extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  TextButton(onPressed: () {}, child: const Text('View All')),
+                  Text(
+                    '${state.paths.length} paths',
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: AppColors.textMuted,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 10),
@@ -166,10 +206,12 @@ class _TrainingHubView extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  TextButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.tune, size: 18),
-                    label: const Text('Filter'),
+                  Text(
+                    '${state.resources.length} guides',
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: AppColors.textMuted,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
@@ -268,7 +310,7 @@ class _PathCard extends StatelessWidget {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.menu_book_outlined,
                       size: 16,
                       color: AppColors.textSecondary,
@@ -331,7 +373,7 @@ class _ResourceRow extends StatelessWidget {
                 color: color,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.article_outlined,
                 color: AppColors.primary,
               ),

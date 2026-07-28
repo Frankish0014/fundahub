@@ -39,3 +39,22 @@ class AddPostComment {
     required String body,
   }) => _repository.addComment(postId, authorName: authorName, body: body);
 }
+
+class CreateCommunityPost {
+  const CreateCommunityPost(this._repository);
+
+  final CommunityRepository _repository;
+
+  Future<String> call({
+    required String authorName,
+    required String authorMeta,
+    required String body,
+    List<String> tags = const [],
+  }) =>
+      _repository.createPost(
+        authorName: authorName,
+        authorMeta: authorMeta,
+        body: body,
+        tags: tags,
+      );
+}

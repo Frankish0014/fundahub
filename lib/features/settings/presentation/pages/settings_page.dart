@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/app_constants.dart';
+import '../../../../core/locale/app_locale_controller.dart';
+import '../../../../core/locale/app_strings.dart';
+import '../../../../core/theme/app_appearance_controller.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/profile_avatar.dart';
 import '../../../../features/auth/domain/entities/user_profile.dart';
 import '../../../../features/auth/domain/repositories/auth_repository.dart';
 import '../../../../injection/injection.dart';
@@ -20,6 +25,7 @@ class _SettingsPageState extends State<SettingsPage> {
   String? _errorMessage;
 
   AuthRepository get _authRepository => sl<AuthRepository>();
+  AppLocaleController get _localeController => sl<AppLocaleController>();
 
   @override
   void initState() {
@@ -74,26 +80,144 @@ class _SettingsPageState extends State<SettingsPage> {
     });
 
     try {
-      await _authRepository.logout();
-
-      if (!mounted) return;
-
-      context.go('/login');
-    } catch (error) {
-      if (!mounted) return;
-
-      setState(() {
-        _isLoggingOut = false;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not log out. Please try again.')),
-      );
+      await _authRepository.logout().timeout(const Duration(seconds: 5));
+    } catch (_) {
+      // Still leave the app even if Google web sign-out hangs.
     }
+
+    if (!mounted) return;
+    context.go('/login');
+  }
+
+  Future<void> _changeLanguage() async {
+    final user = _user;
+    if (user == null || !mounted) return;
+
+    final s = AppStrings.of(context);
+    final currentCode = _localeController.languageCode;
+
+    final selected = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) {
+        return SimpleDialog(
+          title: Text(s.language),
+          children: AppConstants.supportedLanguages.entries.map((entry) {
+            return SimpleDialogOption(
+              onPressed: () => Navigator.pop(dialogContext, entry.key),
+              child: Row(
+                children: [
+                  Expanded(child: Text(entry.value)),
+                  if (currentCode == entry.key)
+                    Icon(Icons.check, color: AppColors.primary),
+                ],
+              ),
+            );
+          }).toList(),
+        );
+      },
+    );
+
+    if (!mounted || selected == null || selected == currentCode) return;
+
+    // Update UI + SharedPreferences immediately so language switches at once.
+    await _localeController.setLanguage(selected);
+
+    try {
+      final updated = await _authRepository.updateProfile(
+        fullName: user.fullName,
+        role: user.role,
+        bio: user.bio,
+        photoUrl: user.photoUrl,
+        language: selected,
+      );
+      if (!mounted) return;
+      setState(() => _user = updated);
+    } catch (_) {
+      // Locale already applied locally; profile sync can retry later.
+    }
+
+    if (!mounted) return;
+    final name =
+        AppConstants.supportedLanguages[selected] ?? selected;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(AppStrings.of(context).languageSetTo(name))),
+    );
+  }
+
+  Future<void> _changeTheme() async {
+    final appearance = sl<AppAppearanceController>();
+    final s = AppStrings.of(context);
+    final selected = await showDialog<ThemeMode>(
+      context: context,
+      builder: (dialogContext) {
+        return SimpleDialog(
+          title: Text(s.theme),
+          children: [
+            for (final option in [
+              (ThemeMode.system, s.themeSystem),
+              (ThemeMode.light, s.themeLight),
+              (ThemeMode.dark, s.themeDark),
+            ])
+              SimpleDialogOption(
+                onPressed: () => Navigator.pop(dialogContext, option.$1),
+                child: Row(
+                  children: [
+                    Expanded(child: Text(option.$2)),
+                    if (appearance.themeMode == option.$1)
+                      Icon(Icons.check, color: AppColors.primary),
+                  ],
+                ),
+              ),
+          ],
+        );
+      },
+    );
+
+    if (!mounted || selected == null) return;
+    await appearance.setThemeMode(selected);
+  }
+
+  Future<void> _changeTextSize() async {
+    final appearance = sl<AppAppearanceController>();
+    final s = AppStrings.of(context);
+    final selected = await showDialog<double>(
+      context: context,
+      builder: (dialogContext) {
+        return SimpleDialog(
+          title: Text(s.textSize),
+          children: [
+            for (final option in [
+              (0.9, s.textSmall),
+              (1.0, s.textDefault),
+              (1.2, s.textLarge),
+            ])
+              SimpleDialogOption(
+                onPressed: () => Navigator.pop(dialogContext, option.$1),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        option.$2,
+                        style: TextStyle(fontSize: 16 * option.$1),
+                      ),
+                    ),
+                    if ((appearance.textScale - option.$1).abs() < 0.01)
+                      Icon(Icons.check, color: AppColors.primary),
+                  ],
+                ),
+              ),
+          ],
+        );
+      },
+    );
+
+    if (!mounted || selected == null) return;
+    await appearance.setTextScale(selected);
   }
 
   @override
   Widget build(BuildContext context) {
+    final s = AppStrings.of(context);
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -103,18 +227,19 @@ class _SettingsPageState extends State<SettingsPage> {
           onPressed: () => context.pop(),
         ),
         title: Text(
-          'Settings',
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+          s.settings,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
         ),
         centerTitle: false,
       ),
-      body: _buildBody(context),
+      body: _buildBody(context, s),
     );
   }
 
-  Widget _buildBody(BuildContext context) {
+  Widget _buildBody(BuildContext context, AppStrings s) {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -126,7 +251,7 @@ class _SettingsPageState extends State<SettingsPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
+              Icon(
                 Icons.error_outline,
                 size: 48,
                 color: AppColors.textSecondary,
@@ -146,7 +271,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
                   _loadCurrentUser();
                 },
-                child: const Text('Try Again'),
+                child: Text(s.retry),
               ),
             ],
           ),
@@ -171,13 +296,16 @@ class _SettingsPageState extends State<SettingsPage> {
               CircleAvatar(
                 radius: 28,
                 backgroundColor: AppColors.avatarBg,
-                child: Text(
-                  user.initial,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
+                backgroundImage: ProfileAvatar.imageProvider(user.photoUrl),
+                child: ProfileAvatar.imageProvider(user.photoUrl) == null
+                    ? Text(
+                        user.initial,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      )
+                    : null,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -185,7 +313,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      user.firstName,
+                      user.fullName,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
@@ -204,62 +332,151 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
         ),
         const SizedBox(height: 22),
-        _sectionLabel(context, 'ACCOUNT & SECURITY'),
+        _sectionLabel(context, s.accountSecurity),
         _settingsCard(
           context,
           children: [
             _tile(
               context,
               icon: Icons.person_outline,
-              label: 'Account',
+              label: s.account,
               onTap: _openEditProfile,
             ),
             const Divider(height: 1),
             _tile(
               context,
               icon: Icons.notifications_none,
-              label: 'Notification Settings',
+              label: s.notificationSettings,
               onTap: () => context.push('/notification-settings'),
             ),
             const Divider(height: 1),
             _tile(
               context,
               icon: Icons.lock_outline,
-              label: 'Privacy',
+              label: s.privacy,
               onTap: () {},
             ),
           ],
         ),
         const SizedBox(height: 18),
-        _sectionLabel(context, 'PREFERENCES'),
-        _settingsCard(
-          context,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.language, color: AppColors.primary),
-              title: const Text('Language'),
-              subtitle: const Text('English'),
-              trailing: const Icon(Icons.keyboard_arrow_down),
-              onTap: () {},
-            ),
-          ],
+        _sectionLabel(context, s.preferences),
+        ListenableBuilder(
+          listenable: Listenable.merge([
+            sl<AppAppearanceController>(),
+            _localeController,
+          ]),
+          builder: (context, _) {
+            final strings = AppStrings.of(context);
+            final appearance = sl<AppAppearanceController>();
+            final langCode = _localeController.languageCode;
+            return _settingsCard(
+              context,
+              children: [
+                ListTile(
+                  leading: Icon(
+                    Icons.language,
+                    color: AppColors.primary,
+                  ),
+                  title: Text(
+                    strings.language,
+                    style: TextStyle(color: AppColors.textPrimary),
+                  ),
+                  subtitle: Text(
+                    AppConstants.supportedLanguages[langCode] ?? 'English',
+                    style: TextStyle(color: AppColors.textSecondary),
+                  ),
+                  trailing: Icon(
+                    Icons.keyboard_arrow_down,
+                    color: AppColors.textMuted,
+                  ),
+                  onTap: _changeLanguage,
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: Icon(
+                    Icons.palette_outlined,
+                    color: AppColors.primary,
+                  ),
+                  title: Text(
+                    strings.theme,
+                    style: TextStyle(color: AppColors.textPrimary),
+                  ),
+                  subtitle: Text(
+                    appearance.themeLabelFor(
+                      light: strings.themeLight,
+                      dark: strings.themeDark,
+                      system: strings.themeSystem,
+                    ),
+                    style: TextStyle(color: AppColors.textSecondary),
+                  ),
+                  trailing: Icon(
+                    Icons.keyboard_arrow_down,
+                    color: AppColors.textMuted,
+                  ),
+                  onTap: _changeTheme,
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: Icon(
+                    Icons.text_fields,
+                    color: AppColors.primary,
+                  ),
+                  title: Text(
+                    strings.textSize,
+                    style: TextStyle(color: AppColors.textPrimary),
+                  ),
+                  subtitle: Text(
+                    appearance.textSizeLabelFor(
+                      small: strings.textSmall,
+                      defaults: strings.textDefault,
+                      large: strings.textLarge,
+                    ),
+                    style: TextStyle(color: AppColors.textSecondary),
+                  ),
+                  trailing: Icon(
+                    Icons.keyboard_arrow_down,
+                    color: AppColors.textMuted,
+                  ),
+                  onTap: _changeTextSize,
+                ),
+                const Divider(height: 1),
+                SwitchListTile(
+                  secondary: Icon(
+                    Icons.view_compact_outlined,
+                    color: AppColors.primary,
+                  ),
+                  title: Text(
+                    strings.compactMode,
+                    style: TextStyle(color: AppColors.textPrimary),
+                  ),
+                  subtitle: Text(
+                    strings.compactModeSubtitle,
+                    style: TextStyle(color: AppColors.textSecondary),
+                  ),
+                  value: appearance.compactMode,
+                  activeThumbColor: AppColors.primary,
+                  onChanged: (value) => appearance.setCompactMode(value),
+                ),
+              ],
+            );
+          },
         ),
         const SizedBox(height: 18),
-        _sectionLabel(context, 'SUPPORT'),
+        _sectionLabel(context, s.support),
         _settingsCard(
           context,
           children: [
             _tile(
               context,
               icon: Icons.help_outline,
-              label: 'Help Center',
+              label: s.helpCenter,
               onTap: () {},
             ),
             const Divider(height: 1),
             _tile(
               context,
               icon: Icons.description_outlined,
-              label: 'Terms of Service',
+              label: s.termsOfService,
               onTap: () {},
             ),
           ],
@@ -272,9 +489,9 @@ class _SettingsPageState extends State<SettingsPage> {
             border: Border.all(color: AppColors.border),
           ),
           child: ListTile(
-            leading: const Icon(Icons.logout, color: AppColors.danger),
+            leading: Icon(Icons.logout, color: AppColors.danger),
             title: Text(
-              _isLoggingOut ? 'Logging out...' : 'Logout',
+              _isLoggingOut ? s.loggingOut : s.logout,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 color: AppColors.danger,
                 fontWeight: FontWeight.w600,
@@ -295,7 +512,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               const SizedBox(height: 4),
               Text(
-                "Made for Rwanda's Entrepreneurs",
+                s.madeForRwanda,
                 style: Theme.of(
                   context,
                 ).textTheme.bodySmall?.copyWith(color: AppColors.textMuted),
@@ -341,8 +558,11 @@ class _SettingsPageState extends State<SettingsPage> {
   }) {
     return ListTile(
       leading: Icon(icon, color: AppColors.primary),
-      title: Text(label),
-      trailing: const Icon(Icons.chevron_right, color: AppColors.textMuted),
+      title: Text(
+        label,
+        style: TextStyle(color: AppColors.textPrimary),
+      ),
+      trailing: Icon(Icons.chevron_right, color: AppColors.textMuted),
       onTap: onTap,
     );
   }

@@ -8,6 +8,9 @@ class UserProfile extends Equatable {
     required this.role,
     this.interests = const [],
     this.emailVerified = false,
+    this.bio = '',
+    this.photoUrl,
+    this.language = 'en',
   });
 
   final String id;
@@ -16,6 +19,9 @@ class UserProfile extends Equatable {
   final String role;
   final List<String> interests;
   final bool emailVerified;
+  final String bio;
+  final String? photoUrl;
+  final String language;
 
   String get firstName {
     final parts = fullName.trim().split(RegExp(r'\s+'));
@@ -25,12 +31,26 @@ class UserProfile extends Equatable {
   String get initial =>
       fullName.isEmpty ? '?' : fullName.trim()[0].toUpperCase();
 
+  bool get isOpportunityProvider =>
+      role == 'NGO / Organisation' || role == 'Government Partner';
+
+  bool get isPlatformAdmin => role == 'Platform Admin';
+
+  /// Alias: Platform Admin is the application Super Admin.
+  bool get isSuperAdmin => isPlatformAdmin;
+
+  /// Providers + admins (hub / publish tooling access).
+  bool get canPublishContent => isOpportunityProvider || isPlatformAdmin;
+
   UserProfile copyWith({
     String? fullName,
     String? email,
     String? role,
     List<String>? interests,
     bool? emailVerified,
+    String? bio,
+    String? photoUrl,
+    String? language,
   }) {
     return UserProfile(
       id: id,
@@ -39,6 +59,9 @@ class UserProfile extends Equatable {
       role: role ?? this.role,
       interests: interests ?? this.interests,
       emailVerified: emailVerified ?? this.emailVerified,
+      bio: bio ?? this.bio,
+      photoUrl: photoUrl ?? this.photoUrl,
+      language: language ?? this.language,
     );
   }
 
@@ -50,5 +73,8 @@ class UserProfile extends Equatable {
     role,
     interests,
     emailVerified,
+    bio,
+    photoUrl,
+    language,
   ];
 }

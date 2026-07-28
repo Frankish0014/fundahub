@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/locale/app_strings.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/opportunity_card.dart';
 import '../../../../injection/injection.dart';
@@ -9,27 +10,48 @@ import '../bloc/search_bloc.dart';
 import 'search_no_results_view.dart';
 
 class SearchPage extends StatelessWidget {
-  const SearchPage({super.key});
+  const SearchPage({super.key, this.initialQuery});
+
+  final String? initialQuery;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-          SearchBloc(getOpportunities: sl())..add(const SearchStarted()),
-      child: const _SearchView(),
+      create: (_) {
+        final bloc = SearchBloc(
+          getOpportunities: sl(),
+          getCurrentUser: sl(),
+        );
+        final seed = initialQuery?.trim();
+        if (seed != null && seed.isNotEmpty) {
+          bloc.add(SearchQueryChanged(seed));
+        } else {
+          bloc.add(const SearchStarted());
+        }
+        return bloc;
+      },
+      child: _SearchView(initialQuery: initialQuery),
     );
   }
 }
 
 class _SearchView extends StatefulWidget {
-  const _SearchView();
+  const _SearchView({this.initialQuery});
+
+  final String? initialQuery;
 
   @override
   State<_SearchView> createState() => _SearchViewState();
 }
 
 class _SearchViewState extends State<_SearchView> {
-  final _controller = TextEditingController();
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialQuery ?? '');
+  }
 
   @override
   void dispose() {
@@ -44,6 +66,7 @@ class _SearchViewState extends State<_SearchView> {
 
   @override
   Widget build(BuildContext context) {
+    final s = AppStrings.of(context);
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -63,7 +86,7 @@ class _SearchViewState extends State<_SearchView> {
                         );
                       },
                       decoration: InputDecoration(
-                        hintText: 'Search opportunities...',
+                        hintText: s.searchOpportunities,
                         prefixIcon: const Icon(Icons.search),
                         suffixIcon: _controller.text.isEmpty
                             ? null
@@ -75,11 +98,11 @@ class _SearchViewState extends State<_SearchView> {
                         fillColor: AppColors.surface,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
-                          borderSide: const BorderSide(color: AppColors.border),
+                          borderSide: BorderSide(color: AppColors.border),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
-                          borderSide: const BorderSide(color: AppColors.border),
+                          borderSide: BorderSide(color: AppColors.border),
                         ),
                       ),
                     ),
@@ -111,10 +134,10 @@ class _SearchViewState extends State<_SearchView> {
                   if (state.status == SearchStatus.failure) {
                     return Center(
                       child: TextButton(
-                        onPressed: () => context.go('/error'),
-                        child: const Text(
-                          'Something went wrong — view details',
-                        ),
+                        onPressed: () => context
+                            .read<SearchBloc>()
+                            .add(const SearchStarted()),
+                        child: Text(AppStrings.of(context).retry),
                       ),
                     );
                   }
@@ -136,7 +159,13 @@ class _SearchViewState extends State<_SearchView> {
                     itemCount: state.results.length,
                     separatorBuilder: (_, _) => const SizedBox(height: 12),
                     itemBuilder: (context, index) {
-                      return OpportunityCard(opportunity: state.results[index]);
+                      final opportunity = state.results[index];
+                      return OpportunityCard(
+                        opportunity: opportunity,
+                        onTap: () => context.push(
+                          '/opportunities/${opportunity.id}',
+                        ),
+                      );
                     },
                   );
                 },

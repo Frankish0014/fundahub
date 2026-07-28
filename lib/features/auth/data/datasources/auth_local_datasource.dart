@@ -14,6 +14,9 @@ class AuthLocalDataSource {
   static const _userRoleKey = 'user_role';
   static const _userInterestsKey = 'user_interests';
   static const _emailVerifiedKey = 'email_verified';
+  static const _userBioKey = 'user_bio';
+  static const _userPhotoKey = 'user_photo_url';
+  static const _userLanguageKey = 'user_language';
 
   Future<bool> hasCompletedOnboarding() async =>
       _prefs.getBool(_onboardingKey) ?? false;
@@ -37,6 +40,9 @@ class AuthLocalDataSource {
       role: role,
       interests: _prefs.getStringList(_userInterestsKey) ?? const [],
       emailVerified: _prefs.getBool(_emailVerifiedKey) ?? false,
+      bio: _prefs.getString(_userBioKey) ?? '',
+      photoUrl: _prefs.getString(_userPhotoKey),
+      language: _prefs.getString(_userLanguageKey) ?? 'en',
     );
   }
 
@@ -47,6 +53,9 @@ class AuthLocalDataSource {
     required String role,
     List<String> interests = const [],
     bool emailVerified = false,
+    String bio = '',
+    String? photoUrl,
+    String language = 'en',
   }) async {
     await _prefs.setString(_userIdKey, id);
     await _prefs.setString(_userNameKey, fullName);
@@ -54,6 +63,13 @@ class AuthLocalDataSource {
     await _prefs.setString(_userRoleKey, role);
     await _prefs.setStringList(_userInterestsKey, interests);
     await _prefs.setBool(_emailVerifiedKey, emailVerified);
+    await _prefs.setString(_userBioKey, bio);
+    await _prefs.setString(_userLanguageKey, language);
+    if (photoUrl == null || photoUrl.isEmpty) {
+      await _prefs.remove(_userPhotoKey);
+    } else {
+      await _prefs.setString(_userPhotoKey, photoUrl);
+    }
     return UserProfile(
       id: id,
       fullName: fullName,
@@ -61,6 +77,9 @@ class AuthLocalDataSource {
       role: role,
       interests: interests,
       emailVerified: emailVerified,
+      bio: bio,
+      photoUrl: photoUrl,
+      language: language,
     );
   }
 
@@ -76,13 +95,21 @@ class AuthLocalDataSource {
       role: user.role,
       interests: interests,
       emailVerified: user.emailVerified,
+      bio: user.bio,
+      photoUrl: user.photoUrl,
+      language: user.language,
     );
   }
 
-  Future<void> clearSession() {
-    // Firebase Auth owns the real authenticated session. The non-sensitive
-    // profile cache remains so role and interests survive a later login by the
-    // same UID. AuthRepository always checks Firebase before returning it.
-    return Future<void>.value();
+  Future<void> clearSession() async {
+    await _prefs.remove(_userIdKey);
+    await _prefs.remove(_userNameKey);
+    await _prefs.remove(_userEmailKey);
+    await _prefs.remove(_userRoleKey);
+    await _prefs.remove(_userInterestsKey);
+    await _prefs.remove(_emailVerifiedKey);
+    await _prefs.remove(_userBioKey);
+    await _prefs.remove(_userPhotoKey);
+    await _prefs.remove(_userLanguageKey);
   }
 }
