@@ -7,6 +7,7 @@ class UserProfile extends Equatable {
     required this.email,
     required this.role,
     this.interests = const [],
+    this.emailVerified = false,
   });
 
   final String id;
@@ -14,6 +15,7 @@ class UserProfile extends Equatable {
   final String email;
   final String role;
   final List<String> interests;
+  final bool emailVerified;
 
   String get firstName {
     final parts = fullName.trim().split(RegExp(r'\s+'));
@@ -28,6 +30,7 @@ class UserProfile extends Equatable {
     String? email,
     String? role,
     List<String>? interests,
+    bool? emailVerified,
   }) {
     return UserProfile(
       id: id,
@@ -35,9 +38,17 @@ class UserProfile extends Equatable {
       email: email ?? this.email,
       role: role ?? this.role,
       interests: interests ?? this.interests,
+      emailVerified: emailVerified ?? this.emailVerified,
     );
   }
 
   @override
-  List<Object?> get props => [id, fullName, email, role, interests];
+  List<Object?> get props => [
+    id,
+    fullName,
+    email,
+    role,
+    interests,
+    emailVerified,
+  ];
 }

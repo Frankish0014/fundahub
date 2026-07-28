@@ -2,9 +2,12 @@
 // (Pipeline API) that would otherwise shadow dart:core's Type used by the
 // service locator's `Map<Type, Object>`.
 import 'package:cloud_firestore/cloud_firestore.dart' show FirebaseFirestore;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../features/auth/data/datasources/auth_local_datasource.dart';
+import '../features/auth/data/datasources/auth_remote_datasource.dart';
 import '../features/auth/data/repositories/auth_repository_impl.dart';
 import '../features/auth/domain/repositories/auth_repository.dart';
 import '../features/auth/domain/usecases/auth_usecases.dart';
@@ -53,20 +56,42 @@ class ServiceLocator {
     return AuthBloc(
       registerUser: call(),
       loginUser: call(),
+      signInWithGoogle: call(),
+      sendPasswordResetEmail: call(),
       updateUserInterests: call(),
       getCurrentUser: call(),
     );
   }
 }
 
-Future<void> initDependencies() async {
+Future<void> initDependencies({AuthRepository? authRepositoryOverride}) async {
   final prefs = await SharedPreferences.getInstance();
 
-  final authLocal = AuthLocalDataSource(prefs);
-  final authRepository = AuthRepositoryImpl(authLocal);
+  late final AuthRepository authRepository;
+  if (authRepositoryOverride != null) {
+    authRepository = authRepositoryOverride;
+  } else {
+    final googleSignIn = GoogleSignIn.instance;
+    const webClientId = String.fromEnvironment('GOOGLE_WEB_CLIENT_ID');
+    await googleSignIn.initialize(
+      serverClientId: webClientId.isEmpty ? null : webClientId,
+    );
+
+    final authLocal = AuthLocalDataSource(prefs);
+    final authRemote = FirebaseAuthRemoteDataSource(
+      FirebaseAuth.instance,
+      googleSignIn,
+    );
+
+    authRepository = AuthRepositoryImpl(authRemote, authLocal);
+  }
   sl.registerSingleton<AuthRepository>(authRepository);
   sl.registerSingleton<RegisterUser>(RegisterUser(authRepository));
   sl.registerSingleton<LoginUser>(LoginUser(authRepository));
+  sl.registerSingleton<SignInWithGoogle>(SignInWithGoogle(authRepository));
+  sl.registerSingleton<SendPasswordResetEmail>(
+    SendPasswordResetEmail(authRepository),
+  );
   sl.registerSingleton<UpdateUserInterests>(
     UpdateUserInterests(authRepository),
   );
