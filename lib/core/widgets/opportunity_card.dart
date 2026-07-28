@@ -106,34 +106,56 @@ class _HeaderRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final status = opportunity.moderationStatus;
+    final showModeration = status != ModerationStatus.approved;
+    final badgeColor = switch (status) {
+      ModerationStatus.approved => AppColors.verified,
+      ModerationStatus.pending => AppColors.deadline,
+      ModerationStatus.rejected => const Color(0xFFB42318),
+    };
+    final badgeBg = switch (status) {
+      ModerationStatus.approved => AppColors.verifiedBg,
+      ModerationStatus.pending => AppColors.deadline.withValues(alpha: 0.12),
+      ModerationStatus.rejected => const Color(0xFFFEF3F2),
+    };
+    final badgeLabel = switch (status) {
+      ModerationStatus.approved => 'VERIFIED',
+      ModerationStatus.pending => 'PENDING REVIEW',
+      ModerationStatus.rejected => 'REJECTED',
+    };
+
     return Row(
       children: [
-        if (opportunity.isVerified)
+        if (opportunity.isVerified || showModeration)
           Flexible(
             child: Align(
               alignment: Alignment.centerLeft,
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.verifiedBg,
+                  color: badgeBg,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
-                      Icons.verified,
+                    Icon(
+                      status == ModerationStatus.approved
+                          ? Icons.verified
+                          : status == ModerationStatus.pending
+                          ? Icons.hourglass_top_rounded
+                          : Icons.cancel_outlined,
                       size: 14,
-                      color: AppColors.verified,
+                      color: badgeColor,
                     ),
                     const SizedBox(width: 4),
                     Flexible(
                       child: Text(
-                        'VERIFIED',
+                        badgeLabel,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: textTheme.labelSmall?.copyWith(
-                          color: AppColors.verified,
+                          color: badgeColor,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 0.3,
                         ),
@@ -182,6 +204,7 @@ class _TitleBlock extends StatelessWidget {
           style: textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w700,
             height: 1.2,
+            color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 2),

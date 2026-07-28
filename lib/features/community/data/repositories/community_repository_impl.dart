@@ -25,4 +25,18 @@ class CommunityRepositoryImpl implements CommunityRepository {
     required String authorName,
     required String body,
   }) => _dataSource.addComment(postId, authorName: authorName, body: body);
+
+  @override
+  Future<String> createPost({
+    required String authorName,
+    required String authorMeta,
+    required String body,
+    List<String> tags = const [],
+  }) =>
+      _dataSource.createPost(
+        authorName: authorName,
+        authorMeta: authorMeta,
+        body: body,
+        tags: tags,
+      );
 }

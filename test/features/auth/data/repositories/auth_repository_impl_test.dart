@@ -72,7 +72,7 @@ void main() {
 
     expect(remote.googleCalls, 1);
     expect(user.fullName, 'Tifare Kaseke');
-    expect(user.role, 'Entrepreneur');
+    expect(user.role, 'Student Entrepreneur');
     expect(user.emailVerified, isTrue);
   });
 

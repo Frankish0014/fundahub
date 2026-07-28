@@ -46,7 +46,7 @@ class ConnectionLostPage extends StatelessWidget {
                         color: AppColors.border.withValues(alpha: 0.55),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.cloud_off_outlined,
                         size: 64,
                         color: AppColors.primary,
@@ -113,7 +113,7 @@ class ConnectionLostPage extends StatelessWidget {
                   onPressed: () => context.go('/home/saved'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.primary,
-                    side: const BorderSide(color: AppColors.borderStrong),
+                    side: BorderSide(color: AppColors.borderStrong),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),
@@ -133,11 +133,11 @@ class ConnectionLostPage extends StatelessWidget {
                     Container(
                       width: 36,
                       height: 36,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: AppColors.mintSoft,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.lightbulb_outline,
                         color: AppColors.primary,
                         size: 20,

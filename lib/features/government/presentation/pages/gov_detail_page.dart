@@ -111,7 +111,7 @@ class GovDetailPage extends StatelessWidget {
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.verified,
                                     size: 14,
                                     color: AppColors.mint,
@@ -146,7 +146,7 @@ class GovDetailPage extends StatelessWidget {
                         const SizedBox(height: 14),
                         Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.payments_outlined,
                               size: 18,
                               color: AppColors.mint,
@@ -201,7 +201,7 @@ class GovDetailPage extends StatelessWidget {
                               ),
                         ),
                         const SizedBox(height: 8),
-                        const CircleAvatar(
+                        CircleAvatar(
                           radius: 24,
                           backgroundColor: AppColors.mint,
                           child: Icon(
@@ -228,7 +228,7 @@ class GovDetailPage extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.person_outline,
                               color: AppColors.primary,
                             ),
@@ -254,7 +254,7 @@ class GovDetailPage extends StatelessWidget {
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.check_circle,
                                     size: 18,
                                     color: AppColors.verified,
@@ -278,7 +278,7 @@ class GovDetailPage extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.assignment_outlined,
                               color: AppColors.primary,
                             ),
@@ -335,7 +335,7 @@ class GovDetailPage extends StatelessWidget {
                   _card(
                     child: Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.campaign_outlined,
                           color: AppColors.primary,
                         ),
@@ -482,7 +482,7 @@ class GovDetailPage extends StatelessWidget {
       child: Row(
         children: [
           Expanded(child: Text(label)),
-          const Icon(
+          Icon(
             Icons.open_in_new,
             size: 18,
             color: AppColors.textSecondary,
