@@ -133,9 +133,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       if (providerId != null && providerId.isNotEmpty) {
         await sl<NotificationRepository>().notifyUser(
           targetUserId: providerId,
-          title: approved
-              ? 'Opportunity approved'
-              : 'Opportunity not verified',
+          title: approved ? 'Opportunity approved' : 'Opportunity not verified',
           body: approved
               ? '"${opportunity.title}" is now live for entrepreneurs on FundaHub.'
               : '"${opportunity.title}" was rejected. ${note.isEmpty ? '' : note}',
@@ -331,17 +329,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                               ? opportunity.amountLabel
                               : opportunity.description,
                           accent: AppColors.accent,
-                          onPreview: () => context.push(
-                            '/opportunities/${opportunity.id}',
-                          ),
-                          onReject: () => _review(
-                            opportunity,
-                            ModerationStatus.rejected,
-                          ),
-                          onApprove: () => _review(
-                            opportunity,
-                            ModerationStatus.approved,
-                          ),
+                          onPreview: () =>
+                              context.push('/opportunities/${opportunity.id}'),
+                          onReject: () =>
+                              _review(opportunity, ModerationStatus.rejected),
+                          onApprove: () =>
+                              _review(opportunity, ModerationStatus.approved),
                         ),
                       ),
                     ),
@@ -487,7 +480,9 @@ class _EmptyCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surfaceElevated,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.8)),
+        border: Border.all(
+          color: theme.colorScheme.outline.withValues(alpha: 0.8),
+        ),
       ),
       child: Column(
         children: [

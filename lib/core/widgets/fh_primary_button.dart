@@ -21,7 +21,8 @@ class FhPrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bg = backgroundColor ?? AppColors.primary;
-    final fg = foregroundColor ??
+    final fg =
+        foregroundColor ??
         (AppColors.isDark ? const Color(0xFF003822) : AppColors.onPrimary);
 
     return SizedBox(

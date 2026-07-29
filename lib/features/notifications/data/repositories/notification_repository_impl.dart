@@ -19,11 +19,10 @@ class NotificationRepositoryImpl implements NotificationRepository {
   Future<void> reviewAnnouncement({
     required String id,
     required String moderationStatus,
-  }) =>
-      _dataSource.reviewAnnouncement(
-        id: id,
-        moderationStatus: moderationStatus,
-      );
+  }) => _dataSource.reviewAnnouncement(
+    id: id,
+    moderationStatus: moderationStatus,
+  );
 
   @override
   Future<void> createAnnouncement({
@@ -32,14 +31,13 @@ class NotificationRepositoryImpl implements NotificationRepository {
     required String createdBy,
     required String organization,
     String moderationStatus = 'approved',
-  }) =>
-      _dataSource.createAnnouncement(
-        title: title,
-        body: body,
-        createdBy: createdBy,
-        organization: organization,
-        moderationStatus: moderationStatus,
-      );
+  }) => _dataSource.createAnnouncement(
+    title: title,
+    body: body,
+    createdBy: createdBy,
+    organization: organization,
+    moderationStatus: moderationStatus,
+  );
 
   @override
   Future<void> notifyUser({
@@ -47,13 +45,12 @@ class NotificationRepositoryImpl implements NotificationRepository {
     required String title,
     required String body,
     required String organization,
-  }) =>
-      _dataSource.createAnnouncement(
-        title: title,
-        body: body,
-        createdBy: 'system',
-        organization: organization,
-        targetUserId: targetUserId,
-        moderationStatus: 'approved',
-      );
+  }) => _dataSource.createAnnouncement(
+    title: title,
+    body: body,
+    createdBy: 'system',
+    organization: organization,
+    targetUserId: targetUserId,
+    moderationStatus: 'approved',
+  );
 }

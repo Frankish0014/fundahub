@@ -58,7 +58,8 @@ class OpportunityDetailBloc
         );
         return;
       }
-      final application = user == null || opportunity == null || !opportunity.isPublic
+      final application =
+          user == null || opportunity == null || !opportunity.isPublic
           ? null
           : await _getMyApplication(
               opportunityId: event.id,

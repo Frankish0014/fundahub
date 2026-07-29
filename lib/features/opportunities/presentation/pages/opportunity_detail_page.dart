@@ -129,9 +129,7 @@ class _OpportunityDetailView extends StatelessWidget {
                   ),
                   const Spacer(),
                   Text(
-                    o.daysLeft > 0
-                        ? '${o.daysLeft} days left'
-                        : 'Closed',
+                    o.daysLeft > 0 ? '${o.daysLeft} days left' : 'Closed',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppColors.deadline,
                       fontWeight: FontWeight.w600,
@@ -150,17 +148,17 @@ class _OpportunityDetailView extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 o.organization,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary),
               ),
               if (o.location.isNotEmpty) ...[
                 const SizedBox(height: 4),
                 Text(
                   o.location,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textMuted,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: AppColors.textMuted),
                 ),
               ],
               const SizedBox(height: 14),
@@ -226,11 +224,7 @@ class _OpportunityDetailView extends StatelessWidget {
               ),
               const SizedBox(height: 18),
               _section(context, 'About', o.description),
-              _section(
-                context,
-                'Target beneficiaries',
-                o.targetBeneficiaries,
-              ),
+              _section(context, 'Target beneficiaries', o.targetBeneficiaries),
               _section(
                 context,
                 'Eligibility & conditions',
@@ -242,11 +236,7 @@ class _OpportunityDetailView extends StatelessWidget {
                   'Required documents',
                   o.requiredDocuments.map((d) => '• $d').join('\n'),
                 ),
-              _section(
-                context,
-                'How to apply',
-                o.applicationInstructions,
-              ),
+              _section(context, 'How to apply', o.applicationInstructions),
               if (o.contactEmail.isNotEmpty)
                 _section(context, 'Contact', o.contactEmail),
               if (application != null) ...[
@@ -264,8 +254,9 @@ class _OpportunityDetailView extends StatelessWidget {
                     children: [
                       Text(
                         'Your application: ${application.statusLabel}',
-                        style: Theme.of(context).textTheme.titleSmall
-                            ?.copyWith(fontWeight: FontWeight.w700),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                       if (application.reviewerNote.isNotEmpty) ...[
                         const SizedBox(height: 6),
@@ -291,14 +282,12 @@ class _OpportunityDetailView extends StatelessWidget {
                     },
                   ),
                 if (!o.isOpen && application == null)
-                  const Text(
-                    'Applications are closed for this opportunity.',
-                  ),
+                  const Text('Applications are closed for this opportunity.'),
                 const SizedBox(height: 10),
                 OutlinedButton(
-                  onPressed: () => context
-                      .read<OpportunityDetailBloc>()
-                      .add(ToggleSaveOpportunity(o.id)),
+                  onPressed: () => context.read<OpportunityDetailBloc>().add(
+                    ToggleSaveOpportunity(o.id),
+                  ),
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size.fromHeight(52),
                   ),
@@ -308,15 +297,14 @@ class _OpportunityDetailView extends StatelessWidget {
               if (isProviderOwner) ...[
                 FhPrimaryButton(
                   label: s.reviewApplications,
-                  onPressed: () => context.push(
-                    '/opportunities/${o.id}/applications',
-                  ),
+                  onPressed: () =>
+                      context.push('/opportunities/${o.id}/applications'),
                 ),
                 const SizedBox(height: 10),
                 OutlinedButton(
-                  onPressed: () => context
-                      .read<OpportunityDetailBloc>()
-                      .add(ToggleSaveOpportunity(o.id)),
+                  onPressed: () => context.read<OpportunityDetailBloc>().add(
+                    ToggleSaveOpportunity(o.id),
+                  ),
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size.fromHeight(52),
                   ),
@@ -333,9 +321,9 @@ class _OpportunityDetailView extends StatelessWidget {
                   !isProviderOwner)
                 Text(
                   'You are signed in as a provider. Switch to an entrepreneur account to apply.',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textMuted,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: AppColors.textMuted),
                 ),
             ],
           );

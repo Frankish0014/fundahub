@@ -9,10 +9,8 @@ part 'profile_event.dart';
 part 'profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
-  ProfileBloc({
-    required this.getCurrentUser,
-    required this.currentUser,
-  }) : super(const ProfileState()) {
+  ProfileBloc({required this.getCurrentUser, required this.currentUser})
+    : super(const ProfileState()) {
     on<ProfileStarted>(_onStarted);
     on<ProfileUserSynced>(_onUserSynced);
     currentUser.addListener(_onExternalUserChange);
@@ -45,10 +43,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       emit(ProfileState(status: ProfileStatus.success, user: user));
     } catch (e) {
       emit(
-        ProfileState(
-          status: ProfileStatus.failure,
-          errorMessage: e.toString(),
-        ),
+        ProfileState(status: ProfileStatus.failure, errorMessage: e.toString()),
       );
     }
   }

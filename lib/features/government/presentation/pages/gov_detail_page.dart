@@ -335,10 +335,7 @@ class GovDetailPage extends StatelessWidget {
                   _card(
                     child: Row(
                       children: [
-                        Icon(
-                          Icons.campaign_outlined,
-                          color: AppColors.primary,
-                        ),
+                        Icon(Icons.campaign_outlined, color: AppColors.primary),
                         const SizedBox(width: 8),
                         Text(
                           'Status',
@@ -482,11 +479,7 @@ class GovDetailPage extends StatelessWidget {
       child: Row(
         children: [
           Expanded(child: Text(label)),
-          Icon(
-            Icons.open_in_new,
-            size: 18,
-            color: AppColors.textSecondary,
-          ),
+          Icon(Icons.open_in_new, size: 18, color: AppColors.textSecondary),
         ],
       ),
     );

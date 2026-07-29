@@ -86,9 +86,7 @@ class ApplicationFirestoreDataSource {
     return bTime.compareTo(aTime);
   }
 
-  OpportunityApplication _fromDoc(
-    DocumentSnapshot<Map<String, dynamic>> doc,
-  ) {
+  OpportunityApplication _fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data()!;
     DateTime? submittedAt;
     DateTime? reviewedAt;

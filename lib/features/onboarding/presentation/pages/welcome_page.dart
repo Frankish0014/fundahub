@@ -43,10 +43,13 @@ class WelcomePage extends StatelessWidget {
                         Text(
                           AppConstants.tagline,
                           textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: AppColors.onPrimary.withValues(alpha: 0.9),
-                            height: 1.4,
-                          ),
+                          style: Theme.of(context).textTheme.bodyLarge
+                              ?.copyWith(
+                                color: AppColors.onPrimary.withValues(
+                                  alpha: 0.9,
+                                ),
+                                height: 1.4,
+                              ),
                         ),
                         const Spacer(flex: 3),
                         FhPrimaryButton(

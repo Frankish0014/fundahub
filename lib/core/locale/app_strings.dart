@@ -37,14 +37,14 @@ class AppStrings {
   String get retry => _t('Try Again', 'Réessayer', 'Ongera ugerageze');
   String get seeAll => _t('See all', 'Voir tout', 'Reba byose');
   String get orDivider => _t('OR', 'OU', 'CYANGWA');
-  String get loading => _t('Please wait...', 'Veuillez patienter...', 'Tegereza...');
+  String get loading =>
+      _t('Please wait...', 'Veuillez patienter...', 'Tegereza...');
 
   // —— Navigation ——
   String get navHome => _t('Home', 'Accueil', 'Ahabanza');
   String get navSearch => _t('Search', 'Recherche', 'Shakisha');
   String get navSaved => _t('Saved', 'Enregistrés', 'Byabitswe');
-  String get navAlerts =>
-      _t('Notifications', 'Notifications', 'Amatangazo');
+  String get navAlerts => _t('Notifications', 'Notifications', 'Amatangazo');
   String get navProfile => _t('Profile', 'Profil', 'Umwirondoro');
   String get navDashboard => _t('Dashboard', 'Tableau de bord', 'Ikibaho');
   String get navListings => _t('Listings', 'Annonces', 'Amahirwe');
@@ -54,25 +54,36 @@ class AppStrings {
   String get navStatus => _t('Status', 'Statut', 'Imiterere');
 
   // —— Auth ——
-  String get welcomeBack =>
-      _t('Welcome back to FundaHub.', 'Bon retour sur FundaHub.', 'Murakaza neza kuri FundaHub.');
-  String get emailAddress =>
-      _t('Email Address', 'Adresse e-mail', 'Imeyili');
+  String get welcomeBack => _t(
+    'Welcome back to FundaHub.',
+    'Bon retour sur FundaHub.',
+    'Murakaza neza kuri FundaHub.',
+  );
+  String get emailAddress => _t('Email Address', 'Adresse e-mail', 'Imeyili');
   String get password => _t('Password', 'Mot de passe', 'Ijambo ry\'ibanga');
-  String get forgotPassword =>
-      _t('Forgot password?', 'Mot de passe oublié ?', 'Wibagiwe ijambo ry\'ibanga?');
+  String get forgotPassword => _t(
+    'Forgot password?',
+    'Mot de passe oublié ?',
+    'Wibagiwe ijambo ry\'ibanga?',
+  );
   String get continueWithGoogle =>
       _t('Continue with Google', 'Continuer avec Google', 'Komeza na Google');
-  String get noAccount =>
-      _t("Don't have an account? Create one", "Pas de compte ? Créer un compte", 'Nta konti? Kora imwe');
+  String get noAccount => _t(
+    "Don't have an account? Create one",
+    "Pas de compte ? Créer un compte",
+    'Nta konti? Kora imwe',
+  );
   String get createAccount =>
       _t('Create Account', 'Créer un compte', 'Kora konti');
 
   // —— Home ——
   String welcomeBackName(String name) =>
       _t('Welcome back,', 'Bon retour,', 'Murakaza neza,');
-  String get searchHint =>
-      _t('Search grants, accelerators...', 'Rechercher subventions, accélérateurs...', 'Shakisha inkunga, accelerators...');
+  String get searchHint => _t(
+    'Search grants, accelerators...',
+    'Rechercher subventions, accélérateurs...',
+    'Shakisha inkunga, accelerators...',
+  );
   String get recommendedForYou =>
       _t('Recommended for you', 'Recommandé pour vous', 'Byasabwa kuri wowe');
   String get categories => _t('Categories', 'Catégories', 'Ibyiciro');
@@ -81,8 +92,7 @@ class AppStrings {
       _t('Accelerators', 'Accélérateurs', 'Accelerators');
   String get scholarships =>
       _t('Scholarships', 'Bourses', 'Amafaranga y\'ishuri');
-  String get competitions =>
-      _t('Competitions', 'Concours', 'Amarushanwa');
+  String get competitions => _t('Competitions', 'Concours', 'Amarushanwa');
 
   String categoryLabel(String category) {
     switch (category.toLowerCase()) {
@@ -100,8 +110,11 @@ class AppStrings {
   }
 
   // —— Search / saved / alerts ——
-  String get searchOpportunities =>
-      _t('Search opportunities...', 'Rechercher des opportunités...', 'Shakisha amahirwe...');
+  String get searchOpportunities => _t(
+    'Search opportunities...',
+    'Rechercher des opportunités...',
+    'Shakisha amahirwe...',
+  );
   String get notifications =>
       _t('Notifications', 'Notifications', 'Amatangazo');
   String get noNotifications =>
@@ -114,23 +127,33 @@ class AppStrings {
       _t('Edit Profile', 'Modifier le profil', 'Hindura umwirondoro');
   String get accountSecurity =>
       _t('ACCOUNT & SECURITY', 'COMPTE & SÉCURITÉ', 'KONTI & UMUTEKANO');
-  String get preferences =>
-      _t('PREFERENCES', 'PRÉFÉRENCES', 'IBYIFUZO');
+  String get preferences => _t('PREFERENCES', 'PRÉFÉRENCES', 'IBYIFUZO');
   String get support => _t('SUPPORT', 'ASSISTANCE', 'UBUFASHA');
   String get account => _t('Account', 'Compte', 'Konti');
-  String get notificationSettings =>
-      _t('Notification Settings', 'Paramètres de notification', 'Igenamiterere ry\'amatangazo');
+  String get notificationSettings => _t(
+    'Notification Settings',
+    'Paramètres de notification',
+    'Igenamiterere ry\'amatangazo',
+  );
   String get privacy => _t('Privacy', 'Confidentialité', 'Ibanga');
   String get language => _t('Language', 'Langue', 'Ururimi');
   String get theme => _t('Theme', 'Thème', 'Insanganyamatsiko');
-  String get textSize => _t('Text size', 'Taille du texte', 'Ingano y\'inyandiko');
+  String get textSize =>
+      _t('Text size', 'Taille du texte', 'Ingano y\'inyandiko');
   String get compactMode =>
       _t('Compact mode', 'Mode compact', 'Uburyo bwa compact');
-  String get compactModeSubtitle =>
-      _t('Tighter spacing across the app', 'Espacement réduit dans l\'application', 'Umwanya muto mu porogaramu');
-  String get helpCenter => _t('Help Center', 'Centre d\'aide', 'Ikigo cy\'ubufasha');
-  String get termsOfService =>
-      _t('Terms of Service', 'Conditions d\'utilisation', 'Amategeko yo gukoresha');
+  String get compactModeSubtitle => _t(
+    'Tighter spacing across the app',
+    'Espacement réduit dans l\'application',
+    'Umwanya muto mu porogaramu',
+  );
+  String get helpCenter =>
+      _t('Help Center', 'Centre d\'aide', 'Ikigo cy\'ubufasha');
+  String get termsOfService => _t(
+    'Terms of Service',
+    'Conditions d\'utilisation',
+    'Amategeko yo gukoresha',
+  );
   String get myInterests =>
       _t('My Interests', 'Mes centres d\'intérêt', 'Ibyanjye nkunda');
   String get changePhoto =>
@@ -138,8 +161,7 @@ class AppStrings {
   String get fullName => _t('Full Name', 'Nom complet', 'Amazina yuzuye');
   String get role => _t('Role', 'Rôle', 'Uruhare');
   String get bio => _t('Bio', 'Bio', 'Ibyerekeye');
-  String get saveChanges =>
-      _t('Save Changes', 'Enregistrer', 'Bika impinduka');
+  String get saveChanges => _t('Save Changes', 'Enregistrer', 'Bika impinduka');
   String get loggingOut =>
       _t('Logging out...', 'Déconnexion...', 'Urimo gusohoka...');
 
@@ -151,43 +173,54 @@ class AppStrings {
   String get textLarge => _t('Large', 'Grand', 'Kinini');
 
   String languageSetTo(String name) => _t(
-        'Language set to $name',
-        'Langue définie : $name',
-        'Ururimi rushyizwe kuri $name',
-      );
+    'Language set to $name',
+    'Langue définie : $name',
+    'Ururimi rushyizwe kuri $name',
+  );
 
   // —— Opportunities ——
-  String get opportunity =>
-      _t('Opportunity', 'Opportunité', 'Amahirwe');
-  String get applyForOpportunity =>
-      _t('Apply for this opportunity', 'Postuler à cette opportunité', 'Saba aya mahirwe');
+  String get opportunity => _t('Opportunity', 'Opportunité', 'Amahirwe');
+  String get applyForOpportunity => _t(
+    'Apply for this opportunity',
+    'Postuler à cette opportunité',
+    'Saba aya mahirwe',
+  );
   String get saveForLater =>
       _t('Save for later', 'Enregistrer pour plus tard', 'Bika nyuma');
   String get unsave => _t('Unsave', 'Retirer', 'Kuraho');
   String get amount => _t('Amount', 'Montant', 'Amafaranga');
   String get verified => _t('VERIFIED', 'VÉRIFIÉ', 'BYEMEJWE');
-  String daysLeft(int n) => _t(
-        '$n days left',
-        '$n jours restants',
-        'Iminsi $n isigaye',
-      );
+  String daysLeft(int n) =>
+      _t('$n days left', '$n jours restants', 'Iminsi $n isigaye');
   String get providerHub =>
       _t('Provider Hub', 'Espace partenaire', 'Ikigo cy\'abatanga');
   String get createOpportunity =>
       _t('Create Opportunity', 'Créer une opportunité', 'Kora amahirwe');
   String get applicationsInbox =>
       _t('Applications inbox', 'Boîte de candidatures', 'Ubusabe');
-  String get madeForRwanda =>
-      _t("Made for Rwanda's Entrepreneurs", 'Pour les entrepreneurs du Rwanda', 'Byakorewe abacuruzi b\'u Rwanda');
-  String get trainingResources =>
-      _t('Training & Resources', 'Formation & Ressources', 'Amahugurwa & Ibikoresho');
+  String get madeForRwanda => _t(
+    "Made for Rwanda's Entrepreneurs",
+    'Pour les entrepreneurs du Rwanda',
+    'Byakorewe abacuruzi b\'u Rwanda',
+  );
+  String get trainingResources => _t(
+    'Training & Resources',
+    'Formation & Ressources',
+    'Amahugurwa & Ibikoresho',
+  );
   String get community => _t('Community', 'Communauté', 'Umuryango');
-  String get governmentProgrammes =>
-      _t('Government Programmes', 'Programmes gouvernementaux', 'Gahunda za Leta');
+  String get governmentProgrammes => _t(
+    'Government Programmes',
+    'Programmes gouvernementaux',
+    'Gahunda za Leta',
+  );
   String get reviewApplications =>
       _t('Review applications', 'Examiner les candidatures', 'Suzuma ubusabe');
-  String get signInToApply =>
-      _t('Sign in to apply', 'Connectez-vous pour postuler', 'Injira kugira ngo usabe');
+  String get signInToApply => _t(
+    'Sign in to apply',
+    'Connectez-vous pour postuler',
+    'Injira kugira ngo usabe',
+  );
   String get saveLabel => _t('Save', 'Enregistrer', 'Bika');
 }
 

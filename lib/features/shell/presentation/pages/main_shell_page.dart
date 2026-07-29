@@ -44,9 +44,7 @@ class MainShellPage extends StatelessWidget {
               decoration: BoxDecoration(
                 color: scheme.surface,
                 border: Border(
-                  top: BorderSide(
-                    color: scheme.outline.withValues(alpha: 0.7),
-                  ),
+                  top: BorderSide(color: scheme.outline.withValues(alpha: 0.7)),
                 ),
                 boxShadow: [
                   BoxShadow(
@@ -189,10 +187,7 @@ class _NavItem extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: AppColors.accent,
                           shape: BoxShape.circle,
-                          border: Border.all(
-                            color: scheme.surface,
-                            width: 1.5,
-                          ),
+                          border: Border.all(color: scheme.surface, width: 1.5),
                         ),
                       ),
                     ),

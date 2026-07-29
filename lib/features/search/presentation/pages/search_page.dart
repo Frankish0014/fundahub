@@ -18,10 +18,7 @@ class SearchPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) {
-        final bloc = SearchBloc(
-          getOpportunities: sl(),
-          getCurrentUser: sl(),
-        );
+        final bloc = SearchBloc(getOpportunities: sl(), getCurrentUser: sl());
         final seed = initialQuery?.trim();
         if (seed != null && seed.isNotEmpty) {
           bloc.add(SearchQueryChanged(seed));
@@ -134,9 +131,9 @@ class _SearchViewState extends State<_SearchView> {
                   if (state.status == SearchStatus.failure) {
                     return Center(
                       child: TextButton(
-                        onPressed: () => context
-                            .read<SearchBloc>()
-                            .add(const SearchStarted()),
+                        onPressed: () => context.read<SearchBloc>().add(
+                          const SearchStarted(),
+                        ),
                         child: Text(AppStrings.of(context).retry),
                       ),
                     );
@@ -162,9 +159,8 @@ class _SearchViewState extends State<_SearchView> {
                       final opportunity = state.results[index];
                       return OpportunityCard(
                         opportunity: opportunity,
-                        onTap: () => context.push(
-                          '/opportunities/${opportunity.id}',
-                        ),
+                        onTap: () =>
+                            context.push('/opportunities/${opportunity.id}'),
                       );
                     },
                   );

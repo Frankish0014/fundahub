@@ -137,8 +137,7 @@ class _SettingsPageState extends State<SettingsPage> {
     }
 
     if (!mounted) return;
-    final name =
-        AppConstants.supportedLanguages[selected] ?? selected;
+    final name = AppConstants.supportedLanguages[selected] ?? selected;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(AppStrings.of(context).languageSetTo(name))),
     );
@@ -373,10 +372,7 @@ class _SettingsPageState extends State<SettingsPage> {
               context,
               children: [
                 ListTile(
-                  leading: Icon(
-                    Icons.language,
-                    color: AppColors.primary,
-                  ),
+                  leading: Icon(Icons.language, color: AppColors.primary),
                   title: Text(
                     strings.language,
                     style: TextStyle(color: AppColors.textPrimary),
@@ -417,10 +413,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 const Divider(height: 1),
                 ListTile(
-                  leading: Icon(
-                    Icons.text_fields,
-                    color: AppColors.primary,
-                  ),
+                  leading: Icon(Icons.text_fields, color: AppColors.primary),
                   title: Text(
                     strings.textSize,
                     style: TextStyle(color: AppColors.textPrimary),
@@ -558,10 +551,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }) {
     return ListTile(
       leading: Icon(icon, color: AppColors.primary),
-      title: Text(
-        label,
-        style: TextStyle(color: AppColors.textPrimary),
-      ),
+      title: Text(label, style: TextStyle(color: AppColors.textPrimary)),
       trailing: Icon(Icons.chevron_right, color: AppColors.textMuted),
       onTap: onTap,
     );

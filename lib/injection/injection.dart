@@ -133,9 +133,7 @@ Future<void> initDependencies({
   sl.registerSingleton<AppLocaleController>(
     AppLocaleController(prefs, cachedUser?.language),
   );
-  sl.registerSingleton<AppAppearanceController>(
-    AppAppearanceController(prefs),
-  );
+  sl.registerSingleton<AppAppearanceController>(AppAppearanceController(prefs));
   sl.registerSingleton<RegisterUser>(RegisterUser(authRepository));
   sl.registerSingleton<LoginUser>(LoginUser(authRepository));
   sl.registerSingleton<SignInWithGoogle>(SignInWithGoogle(authRepository));
@@ -151,7 +149,8 @@ Future<void> initDependencies({
     HasCompletedOnboarding(authRepository),
   );
 
-  final FirebaseFirestore firestore = firestoreOverride ?? FirebaseFirestore.instance;
+  final FirebaseFirestore firestore =
+      firestoreOverride ?? FirebaseFirestore.instance;
   final opportunityDataSource = OpportunityFirestoreDataSource(firestore);
   final opportunityRepository = OpportunityRepositoryImpl(
     opportunityDataSource,

@@ -133,8 +133,7 @@ class _CreateOpportunityPageState extends State<CreateOpportunityPage> {
           contactEmail: _contactEmailController.text.trim().isEmpty
               ? user.email
               : _contactEmailController.text.trim(),
-          applicationInstructions:
-              _instructionsController.text.trim().isEmpty
+          applicationInstructions: _instructionsController.text.trim().isEmpty
               ? 'Submit a complete FundaHub application for provider review.'
               : _instructionsController.text.trim(),
           targetBeneficiaries: _beneficiariesController.text.trim(),
@@ -154,9 +153,9 @@ class _CreateOpportunityPageState extends State<CreateOpportunityPage> {
       context.pop(true);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not publish: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Could not publish: $e')));
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -232,16 +231,16 @@ class _CreateOpportunityPageState extends State<CreateOpportunityPage> {
             },
           ),
           const SizedBox(height: 12),
-          _field(
-            _amountController,
-            'Funding amount (e.g. Up to RWF 10M) *',
-          ),
+          _field(_amountController, 'Funding amount (e.g. Up to RWF 10M) *'),
           _field(
             _daysController,
             'Days until deadline *',
             keyboardType: TextInputType.number,
           ),
-          _field(_locationController, 'Coverage location (e.g. Kigali, Rwanda)'),
+          _field(
+            _locationController,
+            'Coverage location (e.g. Kigali, Rwanda)',
+          ),
           _field(_contactEmailController, 'Contact email for applicants'),
           _section('Programme content'),
           _field(
@@ -273,9 +272,9 @@ class _CreateOpportunityPageState extends State<CreateOpportunityPage> {
           const SizedBox(height: 8),
           Text(
             'Applicants will fill a structured application that you can grant or reject against these criteria.',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AppColors.textMuted,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: AppColors.textMuted),
           ),
           const SizedBox(height: 20),
           FhPrimaryButton(

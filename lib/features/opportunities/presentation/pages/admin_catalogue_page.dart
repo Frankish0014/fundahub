@@ -137,8 +137,9 @@ class _AdminCataloguePageState extends State<AdminCataloguePage> {
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(18),
                                   border: Border.all(
-                                    color: theme.colorScheme.outline
-                                        .withValues(alpha: 0.85),
+                                    color: theme.colorScheme.outline.withValues(
+                                      alpha: 0.85,
+                                    ),
                                   ),
                                 ),
                                 child: Column(

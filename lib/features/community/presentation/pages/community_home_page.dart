@@ -79,9 +79,9 @@ class _CommunityView extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 'Share with the community',
-                style: Theme.of(sheetContext).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                style: Theme.of(
+                  sheetContext,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 6),
               Text(

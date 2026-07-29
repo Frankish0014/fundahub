@@ -34,8 +34,7 @@ abstract final class AppColors {
   static const Color govBadge = Color(0xFFE8A017);
 
   /// Prefer this in widgets (brighter green in dark mode).
-  static Color get primary =>
-      isDark ? const Color(0xFF4CAF82) : brand;
+  static Color get primary => isDark ? const Color(0xFF4CAF82) : brand;
 
   static Color get mint =>
       isDark ? const Color(0xFF2A4338) : const Color(0xFFD4EDE3);

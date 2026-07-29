@@ -37,10 +37,7 @@ class _FundaHubAppState extends State<FundaHubApp> {
           darkTheme: AppTheme.dark(compact: appearance.compactMode),
           themeMode: appearance.themeMode,
           locale: localeController.materialLocale,
-          supportedLocales: const [
-            Locale('en'),
-            Locale('fr'),
-          ],
+          supportedLocales: const [Locale('en'), Locale('fr')],
           localizationsDelegates: const [
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,

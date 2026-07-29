@@ -50,12 +50,7 @@ class GetOpportunityById {
     String id, {
     String? userId,
     bool allowNonPublic = false,
-  }) =>
-      _repository.getById(
-        id,
-        userId: userId,
-        allowNonPublic: allowNonPublic,
-      );
+  }) => _repository.getById(id, userId: userId, allowNonPublic: allowNonPublic);
 }
 
 class CreateOpportunity {
@@ -98,11 +93,10 @@ class ReviewOpportunity {
     required ModerationStatus status,
     required String reviewerId,
     String note = '',
-  }) =>
-      _repository.reviewOpportunity(
-        opportunity: opportunity,
-        status: status,
-        reviewerId: reviewerId,
-        note: note,
-      );
+  }) => _repository.reviewOpportunity(
+    opportunity: opportunity,
+    status: status,
+    reviewerId: reviewerId,
+    note: note,
+  );
 }

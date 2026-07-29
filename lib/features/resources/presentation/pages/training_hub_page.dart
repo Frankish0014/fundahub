@@ -373,10 +373,7 @@ class _ResourceRow extends StatelessWidget {
                 color: color,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(
-                Icons.article_outlined,
-                color: AppColors.primary,
-              ),
+              child: Icon(Icons.article_outlined, color: AppColors.primary),
             ),
             const SizedBox(width: 12),
             Expanded(
