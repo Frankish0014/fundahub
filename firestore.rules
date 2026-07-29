@@ -1,0 +1,125 @@
+rules_version = '2';
+
+// Firestore security rules for FundaHub.
+//
+// Data model (see README.md / lib/features/*/data/datasources):
+//   users/{userId}                      - profile doc, role in ['Student Entrepreneur',
+//                                          'Founder', 'NGO / Organisation',
+//                                          'Government Partner', 'Platform Admin']
+//   users/{userId}/saved/{opportunityId} - per-user saved opportunities
+//   opportunities/{id}                  - createdBy, moderationStatus in
+//                                          ['pending','approved','rejected']
+//   applications/{id}                   - applicantId, providerId, opportunityId
+//   announcements/{id}                  - createdBy, targetUserId (nullable),
+//                                          moderationStatus
+//   community_posts/{id}                - authorId
+//   community_posts/{id}/comments/{id}  - authorId
+//   government_programmes/{id}          - admin-authored content
+//   training_paths/{id}, training_resources/{id} - admin-authored content
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Role is stored on the user's own profile doc rather than a custom
+    // auth claim, so admin checks read that doc.
+    function isAdmin() {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Platform Admin';
+    }
+
+    function isProvider() {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in
+          ['NGO / Organisation', 'Government Partner'];
+    }
+
+    // --- Users -----------------------------------------------------------
+    match /users/{userId} {
+      // Any signed-in user can look up a public profile (e.g. provider name
+      // on an opportunity card, avatar). Writes are locked to the owner or
+      // an admin correcting/moderating an account.
+      allow read: if isSignedIn();
+      allow create: if isOwner(userId);
+      allow update, delete: if isOwner(userId) || isAdmin();
+
+      match /saved/{opportunityId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // --- Opportunities -----------------------------------------------------
+    match /opportunities/{opportunityId} {
+      allow read: if resource.data.moderationStatus == 'approved'
+        || (isSignedIn() && resource.data.createdBy == request.auth.uid)
+        || isAdmin();
+      allow create: if isSignedIn() && isProvider() && request.resource.data.createdBy == request.auth.uid;
+      allow update, delete: if (isSignedIn() && resource.data.createdBy == request.auth.uid) || isAdmin();
+    }
+
+    // --- Applications --------------------------------------------------------
+    match /applications/{applicationId} {
+      allow read: if isSignedIn() && (
+        resource.data.applicantId == request.auth.uid ||
+        resource.data.providerId == request.auth.uid ||
+        isAdmin()
+      );
+      allow create: if isSignedIn() && request.resource.data.applicantId == request.auth.uid;
+      // Provider reviews (approve/reject) their own listing's applications.
+      allow update: if isSignedIn() && (resource.data.providerId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // --- Announcements (Notifications) --------------------------------------
+    match /announcements/{announcementId} {
+      allow read: if resource.data.moderationStatus == 'approved'
+        || (isSignedIn() && resource.data.targetUserId == request.auth.uid)
+        || isAdmin();
+      allow create: if isSignedIn() && (isProvider() || isAdmin());
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // --- Community ---------------------------------------------------------
+    match /community_posts/{postId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.authorId == request.auth.uid;
+      allow update, delete: if isSignedIn() && (resource.data.authorId == request.auth.uid || isAdmin());
+
+      match /comments/{commentId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn() && request.resource.data.authorId == request.auth.uid;
+        allow update, delete: if isSignedIn() && (resource.data.authorId == request.auth.uid || isAdmin());
+      }
+    }
+
+    // --- Admin-authored public content --------------------------------------
+    // Government programmes and training resources are read-only reference
+    // content for every signed-in user; only admins publish/edit them.
+    match /government_programmes/{docId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /training_paths/{docId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /training_resources/{docId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Deny anything not explicitly matched above.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -92,6 +92,14 @@ Preferences such as language, theme, text size, and compact mode are saved on th
 - **Settings persistence** (`test/core/theme/`, `test/core/locale/`) — theme mode, text scale, compact mode, and language each persist to `SharedPreferences` and survive a simulated relaunch.
 - **Community** and **Government** widget tests (`test/features/community/`, `test/features/government/`) — loading/success/error UI states against a mocked repository.
 
+## Firebase security rules
+
+`firestore.rules` (role-based, per collection) and `firebase/storage.rules` (profile photo uploads) are version-controlled in this repo — see the report for the full explanation. Deploy them with:
+
+```bash
+firebase deploy --only firestore:rules,storage:rules
+```
+
 ## Firebase authentication setup
 
 Email/password, Google Sign-In, password reset, session restoration, and auth-test setup are documented in [`AUTH_SETUP.md`](AUTH_SETUP.md). Configure Firebase before running the app against a real project.
