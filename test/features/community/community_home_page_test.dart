@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:fundahub/core/session/current_user_controller.dart';
 import 'package:fundahub/features/community/domain/entities/community_post.dart';
 import 'package:fundahub/features/community/domain/repositories/community_repository.dart';
 import 'package:fundahub/features/community/domain/usecases/community_usecases.dart';
@@ -15,8 +16,10 @@ void main() {
 
   setUp(() {
     repository = MockCommunityRepository();
-    // The page resolves GetCommunityPosts from the service locator.
+    // The page resolves GetCommunityPosts and CurrentUserController from the
+    // service locator (the latter drives admin-only UI in the post list).
     sl.registerSingleton<GetCommunityPosts>(GetCommunityPosts(repository));
+    sl.registerSingleton<CurrentUserController>(CurrentUserController());
   });
 
   testWidgets('renders community posts from the repository', (tester) async {

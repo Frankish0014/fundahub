@@ -52,11 +52,16 @@ class AuthRepositoryImpl implements AuthRepository {
       return _memoryProfile;
     }
 
-    // Prefer local SharedPreferences before hitting Firestore.
+    // Prefer local SharedPreferences before hitting Firestore, but always
+    // reconcile emailVerified against the live Firebase Auth value so a user
+    // who just verified their email doesn't have to log out/in to see it.
     final localUser = await _local.getCurrentUser();
     if (localUser != null && localUser.id == remoteUser.id) {
-      _cacheProfile(localUser);
-      return localUser;
+      final profile = localUser.emailVerified == remoteUser.emailVerified
+          ? localUser
+          : localUser.copyWith(emailVerified: remoteUser.emailVerified);
+      _cacheProfile(profile);
+      return profile;
     }
 
     final profile = await _profileFromRemote(remoteUser);
@@ -303,7 +308,9 @@ class AuthRepositoryImpl implements AuthRepository {
           ? remoteUser.displayName.trim()
           : _nameFromEmail(remoteUser.email);
       role = (remoteData['role'] as String?) ?? 'Student Entrepreneur';
-      interests = List<String>.from(remoteData['interests'] as List? ?? const []);
+      interests = List<String>.from(
+        remoteData['interests'] as List? ?? const [],
+      );
       bio = remoteData['bio'] as String? ?? '';
       photoUrl = remoteData['photoUrl'] as String?;
       language = remoteData['language'] as String? ?? 'en';

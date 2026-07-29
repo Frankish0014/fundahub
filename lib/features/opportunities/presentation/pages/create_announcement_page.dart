@@ -41,9 +41,12 @@ class _CreateAnnouncementPageState extends State<CreateAnnouncementPage> {
     }
 
     final user = await sl<AuthRepository>().getCurrentUser();
+    if (!mounted) return;
     if (user == null || !user.canPublishContent) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Only provider accounts can post announcements.')),
+        const SnackBar(
+          content: Text('Only provider accounts can post announcements.'),
+        ),
       );
       return;
     }
@@ -72,9 +75,9 @@ class _CreateAnnouncementPageState extends State<CreateAnnouncementPage> {
       context.pop(true);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not post: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Could not post: $e')));
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -95,7 +98,10 @@ class _CreateAnnouncementPageState extends State<CreateAnnouncementPage> {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          FhTextField(controller: _titleController, hintText: 'Announcement title'),
+          FhTextField(
+            controller: _titleController,
+            hintText: 'Announcement title',
+          ),
           const SizedBox(height: 12),
           TextField(
             controller: _bodyController,
