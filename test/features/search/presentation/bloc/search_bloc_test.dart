@@ -21,12 +21,26 @@ const _user = UserProfile(
 
 const _grant = Opportunity(
   id: 'op-1',
+  title: 'RDB SME Growth Facility',
+  organization: 'Rwanda Development Board',
+  type: OpportunityType.grant,
+  amountLabel: 'Up to RWF 50M',
+  tags: ['SME Owner', 'Scale-up'],
+  daysLeft: 18,
+  isVerified: true,
+  moderationStatus: ModerationStatus.approved,
+);
+
+const _accelerator = Opportunity(
+  id: 'op-2',
   title: 'Google for Startups Accelerator',
   organization: 'Google',
   type: OpportunityType.accelerator,
   amountLabel: 'Equity-free',
   tags: ['Accelerator'],
   daysLeft: 45,
+  isVerified: true,
+  moderationStatus: ModerationStatus.approved,
 );
 
 void main() {
@@ -45,45 +59,73 @@ void main() {
   );
 
   blocTest<SearchBloc, SearchState>(
-    'emits [loading, success] with results on SearchStarted',
+    'emits [loading, success] with catalogue on SearchStarted',
     setUp: () {
       when(
         () => getOpportunities(
           query: any(named: 'query'),
           userId: any(named: 'userId'),
         ),
-      ).thenAnswer((_) async => const [_grant]);
+      ).thenAnswer((_) async => const [_grant, _accelerator]);
     },
     build: buildBloc,
     act: (bloc) => bloc.add(const SearchStarted()),
     expect: () => [
       const SearchState(status: SearchStatus.loading),
-      const SearchState(status: SearchStatus.success, results: [_grant]),
+      const SearchState(
+        status: SearchStatus.success,
+        catalogue: [_grant, _accelerator],
+        results: [_grant, _accelerator],
+      ),
     ],
   );
 
   blocTest<SearchBloc, SearchState>(
-    'SearchQueryChanged filters by the typed query and re-emits results',
+    'SearchQueryChanged filters cached catalogue by title/org',
     setUp: () {
       when(
-        () => getOpportunities(query: 'accelerator', userId: _user.id),
-      ).thenAnswer((_) async => const [_grant]);
+        () => getOpportunities(
+          query: any(named: 'query'),
+          userId: any(named: 'userId'),
+        ),
+      ).thenAnswer((_) async => const [_grant, _accelerator]);
     },
     build: buildBloc,
-    act: (bloc) => bloc.add(const SearchQueryChanged('accelerator')),
+    seed: () => const SearchState(
+      status: SearchStatus.success,
+      catalogue: [_grant, _accelerator],
+      results: [_grant, _accelerator],
+    ),
+    act: (bloc) => bloc.add(const SearchQueryChanged('rdb')),
     expect: () => [
-      const SearchState(status: SearchStatus.loading, query: 'accelerator'),
       const SearchState(
         status: SearchStatus.success,
-        query: 'accelerator',
+        query: 'rdb',
+        catalogue: [_grant, _accelerator],
         results: [_grant],
       ),
     ],
-    verify: (_) {
-      verify(
-        () => getOpportunities(query: 'accelerator', userId: _user.id),
-      ).called(1);
-    },
+  );
+
+  blocTest<SearchBloc, SearchState>(
+    'SearchFiltersChanged keeps only selected types',
+    build: buildBloc,
+    seed: () => const SearchState(
+      status: SearchStatus.success,
+      catalogue: [_grant, _accelerator],
+      results: [_grant, _accelerator],
+    ),
+    act: (bloc) => bloc.add(
+      const SearchFiltersChanged(selectedTypes: {OpportunityType.grant}),
+    ),
+    expect: () => [
+      const SearchState(
+        status: SearchStatus.success,
+        catalogue: [_grant, _accelerator],
+        results: [_grant],
+        selectedTypes: {OpportunityType.grant},
+      ),
+    ],
   );
 
   blocTest<SearchBloc, SearchState>(

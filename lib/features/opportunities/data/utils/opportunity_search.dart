@@ -2,19 +2,28 @@ import '../../../../core/constants/app_constants.dart';
 import '../../domain/entities/opportunity.dart';
 
 abstract final class OpportunitySearch {
+  /// Returns true when [opportunity] matches [rawQuery] (title, org, type, tags).
   static bool matches(Opportunity opportunity, String rawQuery) {
     final query = rawQuery.trim().toLowerCase();
     if (query.isEmpty) return true;
 
+    // Exact category label from home tiles (e.g. "Grants").
     final categoryType = typeForCategory(query);
     if (categoryType != null && opportunity.type == categoryType) {
       return true;
     }
 
+    // Type synonym typed as the whole query (e.g. "grant", "scholarships").
+    for (final type in OpportunityType.values) {
+      if (searchTermsForType(type).contains(query) &&
+          opportunity.type == type) {
+        return true;
+      }
+    }
+
     final terms = <String>{
       query,
       ...query.split(RegExp(r'\s+')).where((t) => t.length > 1),
-      ...searchTermsForType(opportunity.type),
     };
 
     final fields = <String>[
@@ -22,11 +31,27 @@ abstract final class OpportunitySearch {
       opportunity.organization,
       opportunity.typeLabel,
       opportunity.type.name,
+      opportunity.location,
+      opportunity.description,
       ...opportunity.tags,
     ];
 
     final haystack = fields.join(' ').toLowerCase();
     return terms.any(haystack.contains);
+  }
+
+  /// Applies text query plus optional type / open-only filters.
+  static List<Opportunity> filter({
+    required List<Opportunity> opportunities,
+    String query = '',
+    Set<OpportunityType> types = const {},
+    bool openOnly = false,
+  }) {
+    return opportunities.where((o) {
+      if (types.isNotEmpty && !types.contains(o.type)) return false;
+      if (openOnly && !o.isOpen) return false;
+      return matches(o, query);
+    }).toList();
   }
 
   static OpportunityType? typeForCategory(String raw) {

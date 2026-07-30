@@ -124,12 +124,12 @@ class SearchNoResultsView extends StatelessWidget {
           children: [
             Expanded(
               child: _PopularCard(
-                icon: Icons.trending_up,
-                title: 'Agri-tech Grants',
-                subtitle: '128 active listings',
+                icon: Icons.payments_outlined,
+                title: 'Grants',
+                subtitle: 'Funding for ventures',
                 onTap: () {
                   if (onPopularTap != null) {
-                    onPopularTap!('Agriculture');
+                    onPopularTap!('Grants');
                   } else {
                     onBrowseAll();
                   }
@@ -139,12 +139,12 @@ class SearchNoResultsView extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: _PopularCard(
-                icon: Icons.school_outlined,
-                title: 'EdTech Funding',
-                subtitle: '45 active listings',
+                icon: Icons.rocket_launch_outlined,
+                title: 'Accelerators',
+                subtitle: 'Programs & mentorship',
                 onTap: () {
                   if (onPopularTap != null) {
-                    onPopularTap!('Education');
+                    onPopularTap!('Accelerators');
                   } else {
                     onBrowseAll();
                   }
