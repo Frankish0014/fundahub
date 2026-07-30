@@ -7,6 +7,7 @@ import '../../../saved/presentation/pages/saved_page.dart';
 import '../../../search/presentation/pages/search_page.dart';
 import 'admin_dashboard_page.dart';
 import 'admin_catalogue_page.dart';
+import 'admin_activity_page.dart';
 import 'provider_applications_page.dart';
 import 'provider_dashboard_page.dart';
 import 'provider_listings_page.dart';
@@ -65,8 +66,8 @@ class RoleAwareSavedPage extends StatelessWidget {
       builder: (context, _) {
         final session = sl<CurrentUserController>();
         if (session.isPlatformAdmin) {
-          // Admins use Review tab; this slot shows full catalogue status board.
-          return const AdminCataloguePage(showPendingOnly: false);
+          // Read-only registration activity monitor (applications, accounts, listings).
+          return const AdminActivityPage();
         }
         if (session.isOpportunityProvider) {
           return const ProviderApplicationsPage(embedded: true);

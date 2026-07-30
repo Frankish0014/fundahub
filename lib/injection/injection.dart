@@ -213,6 +213,9 @@ Future<void> initDependencies({
   sl.registerSingleton<GetApplicationById>(
     GetApplicationById(applicationRepository),
   );
+  sl.registerSingleton<GetAllApplications>(
+    GetAllApplications(applicationRepository),
+  );
   sl.registerSingleton<ReviewApplication>(
     ReviewApplication(applicationRepository),
   );

@@ -66,6 +66,14 @@ class ApplicationFirestoreDataSource {
     return items;
   }
 
+  /// Platform-wide list for Super Admin activity monitoring (read-only).
+  Future<List<OpportunityApplication>> fetchAll() async {
+    final snap = await _collection.get();
+    final items = snap.docs.map(_fromDoc).toList();
+    items.sort(_bySubmittedDesc);
+    return items;
+  }
+
   Future<void> updateStatus({
     required String applicationId,
     required ApplicationStatus status,

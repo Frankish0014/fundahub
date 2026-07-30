@@ -78,6 +78,28 @@ Future<void> ensurePlatformSuperAdmin() async {
   }
 }
 
+/// Looks up the seeded Platform Super Admin uid (for orphan/seed listings).
+Future<String?> resolvePlatformSuperAdminUid() async {
+  try {
+    final byEmail = await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: AppConstants.superAdminEmail)
+        .limit(1)
+        .get();
+    if (byEmail.docs.isNotEmpty) return byEmail.docs.first.id;
+
+    final byRole = await FirebaseFirestore.instance
+        .collection('users')
+        .where('role', isEqualTo: AppConstants.platformAdminRole)
+        .limit(1)
+        .get();
+    if (byRole.docs.isNotEmpty) return byRole.docs.first.id;
+  } catch (error) {
+    debugPrint('resolvePlatformSuperAdminUid failed: $error');
+  }
+  return null;
+}
+
 Future<User?> _signInExistingSuperAdmin(
   FirebaseAuth auth,
   String email,

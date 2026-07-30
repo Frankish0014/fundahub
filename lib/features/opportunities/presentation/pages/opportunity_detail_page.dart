@@ -267,7 +267,19 @@ class _OpportunityDetailView extends StatelessWidget {
                 ),
               ],
               if (isEntrepreneur) ...[
-                if (application == null && o.isOpen)
+                if (application == null &&
+                    o.isOpen &&
+                    (o.createdBy == null || o.createdBy!.isEmpty))
+                  Text(
+                    'This demo listing has no provider owner, so applications are not open.',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textMuted,
+                    ),
+                  ),
+                if (application == null &&
+                    o.isOpen &&
+                    o.createdBy != null &&
+                    o.createdBy!.isNotEmpty)
                   FhPrimaryButton(
                     label: s.applyForOpportunity,
                     onPressed: () async {

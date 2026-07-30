@@ -479,7 +479,7 @@ class _AdminToolsCard extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            'Verify provider opportunities and announcements before they reach entrepreneurs.',
+            'Approve opportunity registrations on Review. Use Activity to monitor accounts and applications (read-only).',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: AppColors.textSecondary,
               height: 1.35,
@@ -489,7 +489,7 @@ class _AdminToolsCard extends StatelessWidget {
           _AdminActionTile(
             icon: Icons.verified_user_outlined,
             title: 'Review queue',
-            subtitle: 'Approve or reject pending listings',
+            subtitle: 'Approve or reject pending opportunity listings',
             onTap: onReview,
           ),
           _AdminActionTile(
@@ -499,9 +499,9 @@ class _AdminToolsCard extends StatelessWidget {
             onTap: onCatalogue,
           ),
           _AdminActionTile(
-            icon: Icons.fact_check_outlined,
-            title: 'Status board',
-            subtitle: 'Track pending, approved, and rejected',
+            icon: Icons.timeline_outlined,
+            title: 'Activity',
+            subtitle: 'Monitor accounts and applications (read-only)',
             onTap: onStatus,
           ),
           _AdminActionTile(

@@ -21,6 +21,8 @@ class _ApplicationReviewPageState extends State<ApplicationReviewPage> {
   OpportunityApplication? _application;
   bool _loading = true;
   bool _acting = false;
+  bool _canDecide = false;
+  bool _isAdminViewer = false;
   final _noteController = TextEditingController();
 
   @override
@@ -38,10 +40,15 @@ class _ApplicationReviewPageState extends State<ApplicationReviewPage> {
   Future<void> _load() async {
     try {
       final app = await sl<GetApplicationById>()(widget.applicationId);
+      final user = await sl<AuthRepository>().getCurrentUser();
       if (!mounted) return;
+      final isOwner =
+          user != null && app != null && user.id == app.providerId;
       setState(() {
         _application = app;
         _noteController.text = app?.reviewerNote ?? '';
+        _canDecide = isOwner && user.isOpportunityProvider;
+        _isAdminViewer = user?.isPlatformAdmin == true;
         _loading = false;
       });
     } catch (_) {
@@ -56,10 +63,13 @@ class _ApplicationReviewPageState extends State<ApplicationReviewPage> {
 
     final user = await sl<AuthRepository>().getCurrentUser();
     if (!mounted) return;
-    if (user == null || user.id != app.providerId) {
+    // Only the owning provider decides applications — never Platform Admin.
+    if (user == null ||
+        user.id != app.providerId ||
+        !user.isOpportunityProvider) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Only the opportunity owner can grant or reject.'),
+          content: Text('Only the opportunity provider can grant or reject.'),
         ),
       );
       return;
@@ -132,7 +142,7 @@ class _ApplicationReviewPageState extends State<ApplicationReviewPage> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
-        title: const Text('Review application'),
+        title: Text(_isAdminViewer ? 'Application activity' : 'Review application'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),
@@ -145,6 +155,24 @@ class _ApplicationReviewPageState extends State<ApplicationReviewPage> {
           : ListView(
               padding: const EdgeInsets.all(20),
               children: [
+                if (_isAdminViewer) ...[
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    margin: const EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                      color: AppColors.mintSoft,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.border),
+                    ),
+                    child: Text(
+                      'Read-only. Admins monitor registration activity; only the provider can grant or reject applications. Admins approve opportunity listings separately.',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
                 Text(
                   app.opportunityTitle,
                   style: Theme.of(
@@ -183,31 +211,33 @@ class _ApplicationReviewPageState extends State<ApplicationReviewPage> {
                   'Eligibility confirmed',
                   app.eligibilityConfirmed ? 'Yes' : 'No',
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'Reviewer decision note',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: _noteController,
-                  maxLines: 3,
-                  enabled: !app.isFinal,
-                  decoration: const InputDecoration(
-                    hintText:
-                        'Reference eligibility/conditions when granting or rejecting',
-                  ),
-                ),
-                if (app.reviewerNote.isNotEmpty && app.isFinal) ...[
+                if (_canDecide) ...[
                   const SizedBox(height: 8),
                   Text(
-                    'Recorded note: ${app.reviewerNote}',
+                    'Reviewer decision note',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _noteController,
+                    maxLines: 3,
+                    enabled: !app.isFinal,
+                    decoration: const InputDecoration(
+                      hintText:
+                          'Reference eligibility/conditions when granting or rejecting',
+                    ),
+                  ),
+                ],
+                if (app.reviewerNote.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    'Provider note: ${app.reviewerNote}',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
-                if (!app.isFinal) ...[
+                if (_canDecide && !app.isFinal) ...[
                   const SizedBox(height: 20),
                   FhPrimaryButton(
                     label: _acting ? 'Saving...' : 'Grant application',

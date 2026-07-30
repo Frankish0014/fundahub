@@ -72,7 +72,9 @@ service cloud.firestore {
       );
       allow create: if isSignedIn() && request.resource.data.applicantId == request.auth.uid;
       // Provider reviews (approve/reject) their own listing's applications.
-      allow update: if isSignedIn() && (resource.data.providerId == request.auth.uid || isAdmin());
+      // Platform Admin may read all applications for monitoring but cannot
+      // change decisions — opportunity verification is a separate admin action.
+      allow update: if isSignedIn() && resource.data.providerId == request.auth.uid;
       allow delete: if isAdmin();
     }
 

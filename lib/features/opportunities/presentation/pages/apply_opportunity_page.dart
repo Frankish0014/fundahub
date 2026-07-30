@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/fh_primary_button.dart';
 import '../../../../injection/injection.dart';
 import '../../../auth/domain/repositories/auth_repository.dart';
+import '../../../notifications/domain/repositories/notification_repository.dart';
 import '../../domain/entities/opportunity.dart';
 import '../../domain/entities/opportunity_application.dart';
 import '../../domain/usecases/application_usecases.dart';
@@ -31,8 +32,8 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
   final _locationController = TextEditingController();
   final _fundingController = TextEditingController();
   final _useOfFundsController = TextEditingController();
-  final _teamSizeController = TextEditingController(text: '1');
-  final _yearsController = TextEditingController(text: '0');
+  final _teamSizeController = TextEditingController();
+  final _yearsController = TextEditingController();
   final _impactController = TextEditingController();
 
   @override
@@ -122,7 +123,10 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
       );
       return;
     }
-    if (opportunity.createdBy == null || opportunity.createdBy!.isEmpty) {
+
+    // Applications always go to the listing's provider owner — never to admin.
+    final providerId = opportunity.createdBy?.trim() ?? '';
+    if (providerId.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -155,7 +159,7 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
           id: id,
           opportunityId: opportunity.id,
           opportunityTitle: opportunity.title,
-          providerId: opportunity.createdBy!,
+          providerId: providerId,
           applicantId: user.id,
           applicantName: user.fullName,
           applicantEmail: user.email,
@@ -170,6 +174,13 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
           impactStatement: impact,
           eligibilityConfirmed: true,
         ),
+      );
+      await sl<NotificationRepository>().notifyUser(
+        targetUserId: providerId,
+        title: 'New application received',
+        body:
+            '${user.fullName} applied to "${opportunity.title}". Open Applications to review.',
+        organization: 'FundaHub',
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

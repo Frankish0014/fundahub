@@ -40,6 +40,12 @@ class GetApplicationById {
   Future<OpportunityApplication?> call(String id) => _repository.getById(id);
 }
 
+class GetAllApplications {
+  const GetAllApplications(this._repository);
+  final ApplicationRepository _repository;
+  Future<List<OpportunityApplication>> call() => _repository.getAll();
+}
+
 class ReviewApplication {
   const ReviewApplication(this._repository);
   final ApplicationRepository _repository;

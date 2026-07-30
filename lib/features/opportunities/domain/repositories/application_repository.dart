@@ -16,6 +16,8 @@ abstract class ApplicationRepository {
 
   Future<List<OpportunityApplication>> getForOpportunity(String opportunityId);
 
+  Future<List<OpportunityApplication>> getAll();
+
   Future<void> reviewApplication({
     required String applicationId,
     required ApplicationStatus status,

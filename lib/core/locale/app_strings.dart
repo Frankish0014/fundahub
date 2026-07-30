@@ -51,7 +51,7 @@ class AppStrings {
   String get navInbox => _t('Inbox', 'Boîte', 'Ubusabe');
   String get navReview => _t('Review', 'Examen', 'Suzuma');
   String get navCatalogue => _t('Catalogue', 'Catalogue', 'Urutonde');
-  String get navStatus => _t('Status', 'Statut', 'Imiterere');
+  String get navStatus => _t('Activity', 'Activité', 'Ibikorwa');
 
   // —— Auth ——
   String get welcomeBack => _t(

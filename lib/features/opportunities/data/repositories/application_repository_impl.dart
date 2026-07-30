@@ -38,6 +38,9 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
   ) => _dataSource.fetchForOpportunity(opportunityId);
 
   @override
+  Future<List<OpportunityApplication>> getAll() => _dataSource.fetchAll();
+
+  @override
   Future<void> reviewApplication({
     required String applicationId,
     required ApplicationStatus status,
