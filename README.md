@@ -112,3 +112,12 @@ firebase deploy --only firestore:rules,storage:rules
 ## Firebase authentication setup
 
 Email/password, Google Sign-In, password reset, session restoration, and auth-test setup are documented in [`AUTH_SETUP.md`](AUTH_SETUP.md). Configure Firebase before running the app against a real project.
+
+### Firebase Android configuration
+
+Each developer must download `google-services.json` from the FundaHub
+Firebase project and place it at:
+
+android/app/google-services.json
+
+Contact the Firebase project owner if you do not have project access.
