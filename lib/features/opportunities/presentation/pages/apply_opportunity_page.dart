@@ -107,15 +107,17 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
     final user = await sl<AuthRepository>().getCurrentUser();
     if (!mounted) return;
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please sign in to apply.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please sign in to apply.')));
       return;
     }
     if (user.isOpportunityProvider) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Provider accounts review applications; entrepreneurs apply.'),
+          content: Text(
+            'Provider accounts review applications; entrepreneurs apply.',
+          ),
         ),
       );
       return;
@@ -178,9 +180,9 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
       context.pop(true);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not submit: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Could not submit: $e')));
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -226,9 +228,9 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
               children: [
                 Text(
                   opportunity.title,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -269,10 +271,7 @@ class _ApplyOpportunityPageState extends State<ApplyOpportunityPage> {
                   'What does your venture do? *',
                   maxLines: 3,
                 ),
-                _field(
-                  _fundingController,
-                  'Funding amount requested *',
-                ),
+                _field(_fundingController, 'Funding amount requested *'),
                 _field(
                   _useOfFundsController,
                   'How will funds be used? *',

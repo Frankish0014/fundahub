@@ -32,11 +32,10 @@ class CommunityRepositoryImpl implements CommunityRepository {
     required String authorMeta,
     required String body,
     List<String> tags = const [],
-  }) =>
-      _dataSource.createPost(
-        authorName: authorName,
-        authorMeta: authorMeta,
-        body: body,
-        tags: tags,
-      );
+  }) => _dataSource.createPost(
+    authorName: authorName,
+    authorMeta: authorMeta,
+    body: body,
+    tags: tags,
+  );
 }

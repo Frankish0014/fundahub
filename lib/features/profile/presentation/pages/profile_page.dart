@@ -14,10 +14,9 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ProfileBloc(
-        getCurrentUser: sl(),
-        currentUser: sl(),
-      )..add(const ProfileStarted()),
+      create: (_) =>
+          ProfileBloc(getCurrentUser: sl(), currentUser: sl())
+            ..add(const ProfileStarted()),
       child: const _ProfileView(),
     );
   }
@@ -117,9 +116,9 @@ class _ProfileView extends StatelessWidget {
                     child: InkWell(
                       onTap: () => context.push('/edit-profile').then((_) {
                         if (context.mounted) {
-                          context
-                              .read<ProfileBloc>()
-                              .add(const ProfileStarted());
+                          context.read<ProfileBloc>().add(
+                            const ProfileStarted(),
+                          );
                         }
                       }),
                       borderRadius: BorderRadius.circular(18),
@@ -404,10 +403,7 @@ class _ProfileMenuTile extends StatelessWidget {
                   ),
                 ),
               ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: scheme.onSurfaceVariant,
-              ),
+              Icon(Icons.chevron_right_rounded, color: scheme.onSurfaceVariant),
             ],
           ),
         ),

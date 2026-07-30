@@ -116,21 +116,18 @@ GoRouter createAppRouter() {
       ),
       GoRoute(
         path: '/opportunities/:id/apply',
-        builder: (context, state) => ApplyOpportunityPage(
-          opportunityId: state.pathParameters['id']!,
-        ),
+        builder: (context, state) =>
+            ApplyOpportunityPage(opportunityId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: '/opportunities/:id/applications',
-        builder: (context, state) => ProviderApplicationsPage(
-          opportunityId: state.pathParameters['id'],
-        ),
+        builder: (context, state) =>
+            ProviderApplicationsPage(opportunityId: state.pathParameters['id']),
       ),
       GoRoute(
         path: '/opportunities/:id',
-        builder: (context, state) => OpportunityDetailPage(
-          opportunityId: state.pathParameters['id']!,
-        ),
+        builder: (context, state) =>
+            OpportunityDetailPage(opportunityId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: '/provider-hub',
@@ -142,9 +139,8 @@ GoRouter createAppRouter() {
       ),
       GoRoute(
         path: '/applications/:id',
-        builder: (context, state) => ApplicationReviewPage(
-          applicationId: state.pathParameters['id']!,
-        ),
+        builder: (context, state) =>
+            ApplicationReviewPage(applicationId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: '/announcements/create',

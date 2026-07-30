@@ -14,8 +14,9 @@ class SavedPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => SavedBloc(getSaved: sl(), getCurrentUser: sl())
-        ..add(const SavedStarted()),
+      create: (_) =>
+          SavedBloc(getSaved: sl(), getCurrentUser: sl())
+            ..add(const SavedStarted()),
       child: const _SavedView(),
     );
   }
@@ -58,9 +59,8 @@ class _SavedView extends StatelessWidget {
                       final opportunity = state.items[index];
                       return OpportunityCard(
                         opportunity: opportunity,
-                        onTap: () => context.push(
-                          '/opportunities/${opportunity.id}',
-                        ),
+                        onTap: () =>
+                            context.push('/opportunities/${opportunity.id}'),
                       );
                     },
                   );

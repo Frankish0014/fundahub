@@ -14,11 +14,10 @@ class GetMyApplicationForOpportunity {
   Future<OpportunityApplication?> call({
     required String opportunityId,
     required String applicantId,
-  }) =>
-      _repository.getForApplicantOnOpportunity(
-        opportunityId: opportunityId,
-        applicantId: applicantId,
-      );
+  }) => _repository.getForApplicantOnOpportunity(
+    opportunityId: opportunityId,
+    applicantId: applicantId,
+  );
 }
 
 class GetProviderApplications {
@@ -49,11 +48,10 @@ class ReviewApplication {
     required ApplicationStatus status,
     required String reviewerId,
     String reviewerNote = '',
-  }) =>
-      _repository.reviewApplication(
-        applicationId: applicationId,
-        status: status,
-        reviewerId: reviewerId,
-        reviewerNote: reviewerNote,
-      );
+  }) => _repository.reviewApplication(
+    applicationId: applicationId,
+    status: status,
+    reviewerId: reviewerId,
+    reviewerNote: reviewerNote,
+  );
 }

@@ -1,12 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-enum ApplicationStatus {
-  pending,
-  underReview,
-  granted,
-  rejected,
-  withdrawn,
-}
+enum ApplicationStatus { pending, underReview, granted, rejected, withdrawn }
 
 class OpportunityApplication extends Equatable {
   const OpportunityApplication({

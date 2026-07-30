@@ -149,8 +149,7 @@ class _NotificationCard extends StatelessWidget {
     final isMatch = item.type == AppNotificationType.match;
     final isAnnouncement = item.type == AppNotificationType.announcement;
     final isModeration = item.type == AppNotificationType.moderation;
-    final pendingApproval =
-        isModeration && item.moderationStatus == 'pending';
+    final pendingApproval = isModeration && item.moderationStatus == 'pending';
 
     return Material(
       color: AppColors.surface,

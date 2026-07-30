@@ -9,10 +9,8 @@ part 'search_event.dart';
 part 'search_state.dart';
 
 class SearchBloc extends Bloc<SearchEvent, SearchState> {
-  SearchBloc({
-    required this.getOpportunities,
-    required this.getCurrentUser,
-  }) : super(const SearchState()) {
+  SearchBloc({required this.getOpportunities, required this.getCurrentUser})
+    : super(const SearchState()) {
     on<SearchStarted>(_onStarted);
     on<SearchQueryChanged>(_onQueryChanged);
     on<SearchRefreshed>(_onRefreshed);

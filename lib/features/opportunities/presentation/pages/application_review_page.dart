@@ -96,9 +96,9 @@ class _ApplicationReviewPageState extends State<ApplicationReviewPage> {
       await _load();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not update: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Could not update: $e')));
     } finally {
       if (mounted) setState(() => _acting = false);
     }
@@ -147,9 +147,9 @@ class _ApplicationReviewPageState extends State<ApplicationReviewPage> {
               children: [
                 Text(
                   app.opportunityTitle,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 6),
                 Text(
@@ -186,9 +186,9 @@ class _ApplicationReviewPageState extends State<ApplicationReviewPage> {
                 const SizedBox(height: 8),
                 Text(
                   'Reviewer decision note',
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 8),
                 TextField(

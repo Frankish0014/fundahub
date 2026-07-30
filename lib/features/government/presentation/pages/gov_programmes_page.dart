@@ -51,8 +51,8 @@ class _GovProgrammesView extends StatelessWidget {
                   Text(
                     'Government Programmes',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   const Spacer(),
                   IconButton(
@@ -196,11 +196,7 @@ class _GovError extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            Icons.cloud_off_outlined,
-            size: 40,
-            color: AppColors.textMuted,
-          ),
+          Icon(Icons.cloud_off_outlined, size: 40, color: AppColors.textMuted),
           const SizedBox(height: 12),
           Text(
             'Could not load programmes.',

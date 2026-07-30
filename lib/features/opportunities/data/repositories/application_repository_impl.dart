@@ -19,11 +19,10 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
   Future<OpportunityApplication?> getForApplicantOnOpportunity({
     required String opportunityId,
     required String applicantId,
-  }) =>
-      _dataSource.fetchForApplicant(
-        opportunityId: opportunityId,
-        applicantId: applicantId,
-      );
+  }) => _dataSource.fetchForApplicant(
+    opportunityId: opportunityId,
+    applicantId: applicantId,
+  );
 
   @override
   Future<List<OpportunityApplication>> getForApplicant(String applicantId) =>
@@ -36,8 +35,7 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
   @override
   Future<List<OpportunityApplication>> getForOpportunity(
     String opportunityId,
-  ) =>
-      _dataSource.fetchForOpportunity(opportunityId);
+  ) => _dataSource.fetchForOpportunity(opportunityId);
 
   @override
   Future<void> reviewApplication({
@@ -45,11 +43,10 @@ class ApplicationRepositoryImpl implements ApplicationRepository {
     required ApplicationStatus status,
     required String reviewerId,
     String reviewerNote = '',
-  }) =>
-      _dataSource.updateStatus(
-        applicationId: applicationId,
-        status: status,
-        reviewerId: reviewerId,
-        reviewerNote: reviewerNote,
-      );
+  }) => _dataSource.updateStatus(
+    applicationId: applicationId,
+    status: status,
+    reviewerId: reviewerId,
+    reviewerNote: reviewerNote,
+  );
 }

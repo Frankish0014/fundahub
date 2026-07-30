@@ -32,16 +32,13 @@ class NotificationFirestoreDataSource implements NotificationRemoteDataSource {
   Future<List<AppNotification>> fetchForUser(String? userId) async {
     await _ensureSeeded();
     final snap = await _collection.orderBy('createdAt', descending: true).get();
-    return snap.docs
-        .map(_fromDoc)
-        .where((n) {
-          final target = n.targetUserId;
-          if (target != null && target.isNotEmpty) {
-            return userId != null && target == userId;
-          }
-          return n.moderationStatus == 'approved';
-        })
-        .toList();
+    return snap.docs.map(_fromDoc).where((n) {
+      final target = n.targetUserId;
+      if (target != null && target.isNotEmpty) {
+        return userId != null && target == userId;
+      }
+      return n.moderationStatus == 'approved';
+    }).toList();
   }
 
   @override
@@ -84,7 +81,7 @@ class NotificationFirestoreDataSource implements NotificationRemoteDataSource {
       'type': targetUserId == null
           ? AppNotificationType.announcement.name
           : AppNotificationType.moderation.name,
-      if (targetUserId != null) 'targetUserId': targetUserId,
+      'targetUserId': ?targetUserId,
       'moderationStatus': moderationStatus,
       'createdAt': FieldValue.serverTimestamp(),
     });

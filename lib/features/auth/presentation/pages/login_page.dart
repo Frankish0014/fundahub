@@ -155,10 +155,9 @@ class _LoginViewState extends State<_LoginView> {
                                   hintText: s.emailAddress,
                                   keyboardType: TextInputType.emailAddress,
                                   prefixIcon: Icons.mail_outline_rounded,
-                                  onChanged: (value) =>
-                                      context.read<AuthBloc>().add(
-                                        AuthEmailChanged(value),
-                                      ),
+                                  onChanged: (value) => context
+                                      .read<AuthBloc>()
+                                      .add(AuthEmailChanged(value)),
                                 ),
                                 const SizedBox(height: 12),
                                 FhTextField(
@@ -166,10 +165,9 @@ class _LoginViewState extends State<_LoginView> {
                                   hintText: s.password,
                                   obscureText: true,
                                   prefixIcon: Icons.lock_outline_rounded,
-                                  onChanged: (value) =>
-                                      context.read<AuthBloc>().add(
-                                        AuthPasswordChanged(value),
-                                      ),
+                                  onChanged: (value) => context
+                                      .read<AuthBloc>()
+                                      .add(AuthPasswordChanged(value)),
                                 ),
                                 Align(
                                   alignment: Alignment.centerRight,
@@ -198,11 +196,7 @@ class _LoginViewState extends State<_LoginView> {
                           const SizedBox(height: 22),
                           Row(
                             children: [
-                              Expanded(
-                                child: Divider(
-                                  color: AppColors.border,
-                                ),
-                              ),
+                              Expanded(child: Divider(color: AppColors.border)),
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 12,
@@ -215,11 +209,7 @@ class _LoginViewState extends State<_LoginView> {
                                   ),
                                 ),
                               ),
-                              Expanded(
-                                child: Divider(
-                                  color: AppColors.border,
-                                ),
-                              ),
+                              Expanded(child: Divider(color: AppColors.border)),
                             ],
                           ),
                           const SizedBox(height: 18),

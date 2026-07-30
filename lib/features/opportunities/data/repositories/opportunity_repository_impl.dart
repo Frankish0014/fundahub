@@ -25,13 +25,8 @@ class OpportunityRepositoryImpl implements OpportunityRepository {
   }
 
   @override
-  Future<List<Opportunity>> getByCreator({
-    required String userId,
-  }) async {
-    return _withSavedFlags(
-      await _dataSource.fetchByCreator(userId),
-      userId,
-    );
+  Future<List<Opportunity>> getByCreator({required String userId}) async {
+    return _withSavedFlags(await _dataSource.fetchByCreator(userId), userId);
   }
 
   @override

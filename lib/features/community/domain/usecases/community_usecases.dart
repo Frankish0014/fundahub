@@ -50,11 +50,10 @@ class CreateCommunityPost {
     required String authorMeta,
     required String body,
     List<String> tags = const [],
-  }) =>
-      _repository.createPost(
-        authorName: authorName,
-        authorMeta: authorMeta,
-        body: body,
-        tags: tags,
-      );
+  }) => _repository.createPost(
+    authorName: authorName,
+    authorMeta: authorMeta,
+    body: body,
+    tags: tags,
+  );
 }

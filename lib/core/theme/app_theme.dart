@@ -115,7 +115,9 @@ abstract final class AppTheme {
       bodySmall: withColor(base.textTheme.bodySmall).copyWith(color: textMuted),
       labelLarge: withColor(base.textTheme.labelLarge),
       labelMedium: withColor(base.textTheme.labelMedium),
-      labelSmall: withColor(base.textTheme.labelSmall).copyWith(color: textMuted),
+      labelSmall: withColor(
+        base.textTheme.labelSmall,
+      ).copyWith(color: textMuted),
     );
 
     final inputBorder = OutlineInputBorder(

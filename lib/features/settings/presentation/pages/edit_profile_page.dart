@@ -110,14 +110,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
           .timeout(const Duration(seconds: 30));
       if (!mounted) return;
       setState(() => _photoUrl = updated.photoUrl);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile photo updated.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Profile photo updated.')));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not upload photo: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Could not upload photo: $e')));
     } finally {
       if (mounted) setState(() => _isUploadingPhoto = false);
     }
@@ -332,9 +332,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               onSelected: (_) => setState(() => _language = entry.key),
               selectedColor: AppColors.mintSoft,
               labelStyle: TextStyle(
-                color: selected
-                    ? AppColors.primary
-                    : AppColors.textPrimary,
+                color: selected ? AppColors.primary : AppColors.textPrimary,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
               ),
               side: BorderSide(
@@ -430,14 +428,18 @@ class _LockedField extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   hint,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: AppColors.textMuted,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelSmall?.copyWith(color: AppColors.textMuted),
                 ),
               ],
             ),
           ),
-          Icon(Icons.lock_outline_rounded, size: 18, color: AppColors.textMuted),
+          Icon(
+            Icons.lock_outline_rounded,
+            size: 18,
+            color: AppColors.textMuted,
+          ),
         ],
       ),
     );
@@ -471,9 +473,9 @@ class _AdminToolsCard extends StatelessWidget {
         children: [
           Text(
             'Super Admin tools',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 6),
           Text(
@@ -547,9 +549,9 @@ class _AdminActionTile extends StatelessWidget {
           ),
           title: Text(
             title,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
           ),
           subtitle: Text(subtitle),
           trailing: const Icon(Icons.chevron_right_rounded),
@@ -594,9 +596,9 @@ class _InterestsEditor extends StatelessWidget {
             children: [
               Text(
                 'My Interests',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
               ),
               const Spacer(),
               TextButton(
@@ -614,9 +616,9 @@ class _InterestsEditor extends StatelessWidget {
           if (showProviderHint) ...[
             Text(
               'Help entrepreneurs discover programmes that match these themes.',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
             ),
             const SizedBox(height: 8),
           ],
@@ -642,9 +644,7 @@ class _InterestsEditor extends StatelessWidget {
                     (tag) => ActionChip(
                       label: Text('+ $tag'),
                       backgroundColor: AppColors.interestChipBg,
-                      labelStyle: TextStyle(
-                        color: AppColors.interestChipText,
-                      ),
+                      labelStyle: TextStyle(color: AppColors.interestChipText),
                       onPressed: () => onAdd(tag),
                     ),
                   ),

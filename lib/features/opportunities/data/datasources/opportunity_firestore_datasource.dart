@@ -152,8 +152,7 @@ class OpportunityFirestoreDataSource {
       ),
       location: data['location'] as String? ?? '',
       contactEmail: data['contactEmail'] as String? ?? '',
-      applicationInstructions:
-          data['applicationInstructions'] as String? ?? '',
+      applicationInstructions: data['applicationInstructions'] as String? ?? '',
       targetBeneficiaries: data['targetBeneficiaries'] as String? ?? '',
     );
   }
@@ -280,8 +279,7 @@ class OpportunityFirestoreDataSource {
       ],
       'location': 'Partner universities (Africa)',
       'contactEmail': 'scholars@mastercardfdn.org',
-      'applicationInstructions':
-          'Apply with academic and leadership evidence.',
+      'applicationInstructions': 'Apply with academic and leadership evidence.',
       'targetBeneficiaries': 'Students seeking tertiary education support',
     },
     {
@@ -324,15 +322,10 @@ class OpportunityFirestoreDataSource {
           'Accelerator for women-led ventures with social or climate impact.',
       'eligibilityCriteria':
           'Women-led (majority ownership or leadership); early-stage venture; social/climate impact focus.',
-      'requiredDocuments': [
-        'Founder ID',
-        'Venture brief',
-        'Impact metrics',
-      ],
+      'requiredDocuments': ['Founder ID', 'Venture brief', 'Impact metrics'],
       'location': 'East Africa',
       'contactEmail': 'impact@unwomen.org',
-      'applicationInstructions':
-          'Apply with venture and impact narrative.',
+      'applicationInstructions': 'Apply with venture and impact narrative.',
       'targetBeneficiaries': 'Women-led social enterprises',
     },
   ];

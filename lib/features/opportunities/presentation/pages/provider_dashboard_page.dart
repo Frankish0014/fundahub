@@ -132,7 +132,8 @@ class _ProviderDashboardPageState extends State<ProviderDashboardPage> {
                         _ActionTile(
                           icon: Icons.add_box_outlined,
                           title: 'Create opportunity',
-                          subtitle: 'Publish a grant, scholarship, or programme',
+                          subtitle:
+                              'Publish a grant, scholarship, or programme',
                           onTap: () async {
                             final created = await context.push<bool>(
                               '/opportunities/create',
@@ -489,7 +490,10 @@ class _ApplicationPreview extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
                   color: scheme.primary.withValues(alpha: 0.14),
                   borderRadius: BorderRadius.circular(20),

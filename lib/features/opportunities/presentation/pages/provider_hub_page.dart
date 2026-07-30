@@ -93,8 +93,9 @@ class _ProviderHubPageState extends State<ProviderHubPage> {
                 children: [
                   Text(
                     'Welcome, ${user?.fullName ?? 'Partner'}',
-                    style: Theme.of(context).textTheme.headlineSmall
-                        ?.copyWith(fontWeight: FontWeight.w700),
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -174,9 +175,8 @@ class _ProviderHubPageState extends State<ProviderHubPage> {
                         padding: const EdgeInsets.only(bottom: 12),
                         child: OpportunityCard(
                           opportunity: opportunity,
-                          onTap: () => context.push(
-                            '/opportunities/${opportunity.id}',
-                          ),
+                          onTap: () =>
+                              context.push('/opportunities/${opportunity.id}'),
                         ),
                       ),
                     ),
