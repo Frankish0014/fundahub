@@ -83,6 +83,15 @@ On **Log In**, enter the email and password above to open the Review workspace.
 
 Preferences such as language, theme, text size, and compact mode are saved on the device with SharedPreferences and restored on the next launch.
 
+### Search (entrepreneurs)
+
+On **Search**, entrepreneurs browse **verified** opportunities only.
+
+- Type in the search bar to match **title, organization, type, tags, location, and description** (results update as you type).
+- Tap the **filter** (tune) button to narrow by type: **Grants / Accelerators / Scholarships / Competitions**, and optionally **Open only** (hide closed listings).
+- Active filters show as chips; clear them from the chip row, the filter sheet, or **Clear Filters** on the no-results screen.
+- Pull down to refresh the catalogue.
+
 ## Testing
 
 `flutter test` covers:
