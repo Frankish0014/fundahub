@@ -126,6 +126,18 @@ Contact the Firebase project owner if you do not have project access.
 
 FundaHub uses Google Sign-In through Firebase Authentication. The Google OAuth Web Client ID must be included when building the Android release APK.
 
+##Firabase datastore
+<img width="1918" height="972" alt="image" src="https://github.com/user-attachments/assets/2d67b444-784f-45a0-8335-1a773f41a20b" />
+
+##Overview of UI
+<img width="738" height="417" alt="image" src="https://github.com/user-attachments/assets/b3712962-b12e-4aa5-abd3-7ef315841b66" />
+<img width="703" height="417" alt="image" src="https://github.com/user-attachments/assets/ee11f944-b1d1-4490-af0f-974b5051e3b2" />
+<img width="663" height="390" alt="image" src="https://github.com/user-attachments/assets/54306637-570c-4bd0-a652-4add060a0cd7" />
+
+##Testing
+<img width="533" height="335" alt="image" src="https://github.com/user-attachments/assets/b661f63c-465b-44b1-928d-490f3fda9f06" />
+
+
 ### Firebase configuration
 
 Ensure the latest Firebase configuration file is located at:
@@ -167,16 +179,8 @@ The APK signing certificate SHA-1 and SHA-256 fingerprints are registered in Fir
 Google Sign-In is enabled under Firebase Authentication.
 The Android package name is com.fundahub.fundahub.
 
-##Firabase datastore
-<img width="1918" height="972" alt="image" src="https://github.com/user-attachments/assets/2d67b444-784f-45a0-8335-1a773f41a20b" />
 
-##Overview of UI
-<img width="738" height="417" alt="image" src="https://github.com/user-attachments/assets/b3712962-b12e-4aa5-abd3-7ef315841b66" />
-<img width="703" height="417" alt="image" src="https://github.com/user-attachments/assets/ee11f944-b1d1-4490-af0f-974b5051e3b2" />
-<img width="663" height="390" alt="image" src="https://github.com/user-attachments/assets/54306637-570c-4bd0-a652-4add060a0cd7" />
 
-##Testing
-<img width="533" height="335" alt="image" src="https://github.com/user-attachments/assets/b661f63c-465b-44b1-928d-490f3fda9f06" />
 
 
 
