@@ -121,3 +121,48 @@ Firebase project and place it at:
 android/app/google-services.json
 
 Contact the Firebase project owner if you do not have project access.
+
+## Building the Android Release APK
+
+FundaHub uses Google Sign-In through Firebase Authentication. The Google OAuth Web Client ID must be included when building the Android release APK.
+
+### Firebase configuration
+
+Ensure the latest Firebase configuration file is located at:
+
+```text
+android/app/google-services.json
+
+The filename must be exactly google-services.json.
+
+Build the release APK
+
+Run the following commands from the project root:
+
+flutter clean
+flutter pub get
+flutter build apk --release --dart-define=GOOGLE_WEB_CLIENT_ID=382670022014-je7evhjqsu7g7c1a93g8lcn71sm88aen.apps.googleusercontent.com
+
+Do not build the APK using only:
+
+flutter build apk --release
+
+Without the GOOGLE_WEB_CLIENT_ID Dart definition, Google Sign-In will not be configured correctly.
+
+The completed APK will be generated at:
+
+build/app/outputs/flutter-apk/app-release.apk
+Google Sign-In troubleshooting
+
+If the application displays the following error:
+
+Google sign-in is not configured correctly.
+Check the SHA keys and Web client ID in Firebase.
+
+Confirm that:
+
+The complete release build command above was used.
+The latest google-services.json file is inside android/app.
+The APK signing certificate SHA-1 and SHA-256 fingerprints are registered in Firebase.
+Google Sign-In is enabled under Firebase Authentication.
+The Android package name is com.fundahub.fundahub.
